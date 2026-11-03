@@ -1,0 +1,32 @@
+/* Independent project asset demonstration. Never changes source files or workflow execution. */
+const ProjectAssetModel=(()=>{
+ const categories=['方案与立项','实验与测试','分析报告','参考资料','其他'];
+ const clone=x=>JSON.parse(JSON.stringify(x)),now=()=>new Date().toISOString();
+ function seed(src){
+  const make=(id,name,category,text,extra={})=>({id,name,category,summary:'项目演示资料',important:false,author:'林晓',origin:'人工上传',updated:'2026-10-25T09:00:00+08:00',stage:'',routes:[],links:[],sources:[],adoptions:[],versions:[{id:'v1.0',text,status:'不需确认',author:'林晓',at:'2026-10-25 09:00',summary:'初始演示资料'}],messages:{},...extra});
+  return {schema:1,files:[
+   make('sop','防刮擦涂层研发方案与执行SOP.md',categories[0],src['sop.md'],{important:true,summary:'候选设计原文 · 确认与采用记录仅为演示快照',stage:'S2',routes:['共用'],requiresConfirm:true,sources:[{id:'brief',version:'v1.0',note:'项目目标与边界'},{id:'formulations',version:'v1.0',note:'配方数据'},{id:'evidence',version:'v1.0',note:'来源条目及限制'}],links:[{task:'T22',stage:'S2',route:'共用',purpose:'输入'}],adoptions:[{task:'T22',version:'v1.0',scope:'S2 / 路线比较样板',purpose:'输入'}],versions:[{id:'v1.0',text:src['sop.md'],status:'已确认',author:'林晓',at:'2026-10-24 16:00',summary:'演示快照确认；原文仍为候选设计',confirmation:{by:'林晓',at:'2026-10-24 16:00',note:'仅确认方案文件，不代表实测通过'}}]}),
+   make('pdf','SOP中文阅读版.pdf',categories[0],'',{summary:'与SOP Markdown同源的PDF阅读件',url:'/archives/workflow-v2/assets/project-files/sop.pdf',sources:[{id:'sop',version:'v1.0',note:'同源导出阅读件'}],routes:['共用']}),
+   make('formulations','formulations.json',categories[0],src['formulations.json'],{summary:'配套候选配方数据；不在资产页重新计算',routes:['R1','R2','R3','R4']}),
+   make('evidence','evidence.json',categories[3],src['evidence.json'],{summary:'来源摘要与访问限制，并非标准全文',routes:['共用']}),
+   make('brief','项目目标与约束说明.md',categories[0],'# 项目目标与约束\n\n本地演示输入资料。\n\n## 目标\n提升既有清漆表面的耐刮擦能力，同时核对透明度、附着与耐水性能。\n\n## 边界\n100℃×2h、氙灯3000h、20°光泽≥85均为设计目标，未证明达标。\n\n## 决策\n各路线用相同证据口径比较；实验判定需人工审核。',{summary:'示例输入资料 · 目标不等于实测结论',routes:['共用']}),
+   make('r3','R3沸水测试记录.csv',categories[1],'路线,样板编号,测试项目,实测值,判定,备注\nR3,演示样板,沸水验证,未填写,待审核,仅示例表头不含实测数据',{author:'王宁',summary:'演示记录草稿 · 尚未提交，不能判定通过',stage:'S2',routes:['R3'],delivery:{task:'T24',status:'未提交'},links:[{task:'T24',stage:'S2',route:'R3',purpose:'输出'}]}),
+   make('report','路线比较与入选报告.md',categories[2],'# 路线比较与入选报告\n\n> 演示草稿，尚未形成路线入选决定。\n\n## 输入完整性\n| 证据 | 状态 |\n| --- | --- |\n| 施工窗与初始性能 | 待核对 |\n| R3沸水记录 | 未提交 |\n| 配对擦伤记录 | 待提交 |\n\n## 入选意见\n证据尚未收齐。不得据此宣布任何路线通过或入选。',{origin:'AI生成',author:'Supervisor Agent',summary:'T26阶段报告 · 等待完整输入与人工确认',requiresConfirm:true,stage:'S2',routes:['R1','R2','R3','R4'],versions:[{id:'v1.0',text:'# 路线比较与入选报告\n\n## 证据缺口\nR3沸水记录与配对擦伤记录待提交。\n\n## 入选意见\n证据未齐，不形成路线入选决定。',status:'待确认',author:'Supervisor Agent',at:'2026-10-25 09:00',summary:'本地演示草稿'}],links:[{task:'T26',stage:'S2',route:'共用',purpose:'输出'}],sources:[{id:'r3',version:'v1.0',note:'测试记录尚未提交'}],delivery:{task:'T26',status:'未提交'}}),
+   make('docx','清漆基材资料.docx',categories[3],'',{summary:'附件元信息示例；未加载原件，暂不支持预览'}),
+   make('pptx','工艺验证评审材料.pptx',categories[3],'',{summary:'评审附件元信息示例；未加载原件',stage:'S4',ownerOnly:true}),
+   make('notes','项目方案讨论笔记.md',categories[4],'# 项目方案讨论笔记\n\n## 待讨论\n- 核对R3沸水记录交付时间。\n- 更新方案时保留现有任务采用的版本。\n\n普通讨论产物，不替代正式SOP，也不完成任何任务。',{origin:'AI生成',author:'Supervisor Agent',summary:'普通讨论产物，不替代正式SOP'})
+  ],changes:[],recycle:[],messages:[]};
+ }
+ const latest=f=>f.versions.at(-1),version=(f,id)=>f.versions.find(v=>v.id===id),ext=f=>f.name.split('.').at(-1).toLowerCase();
+ const canEdit=role=>role!=='reader';
+ function requireEdit(role){if(!canEdit(role))throw Error('只读成员不能修改文件');}
+ function draft(f,text,summary,role='owner'){requireEdit(role);if(f.restricted||(f.ownerOnly&&role!=='owner'))throw Error('没有该文件的编辑权限');const n=f.versions.length;const v={id:'v1.'+n,text,status:f.requiresConfirm?'草稿':'不需确认',author:'林晓',at:now(),summary};f.versions.push(v);f.updated=now();return v;}
+ function submit(f,id,role){requireEdit(role);const v=version(f,id);if(!f.requiresConfirm||v.status!=='草稿')throw Error('仅可提交具体草稿版本');v.status='待确认';v.submittedAt=now();}
+ function confirm(f,id,role){if(role!=='owner')throw Error('仅项目负责人可确认版本');const v=version(f,id);if(v?.status!=='待确认')throw Error('此版本不在待确认状态');f.versions.filter(n=>n.status==='已确认').forEach(n=>n.status='已替代');v.status='已确认';v.confirmation={by:'林晓',at:now(),note:'演示确认；不自动迁移任务引用'};}
+ function adoptionDraft(s,f,id,task,role){requireEdit(role);const v=version(f,id);if(!v||v.status!=='已确认')throw Error('请选择已确认版本');const old=f.adoptions.find(a=>a.task===task);if(old?.version===id)throw Error('该任务已采用此版本');const p={id:'change-'+Date.now(),asset:f.id,version:id,task,before:old?.version||'未采用',status:'待确认',at:now()};s.changes.push(p);return p;}
+ function applyChange(s,id,role){if(role!=='owner')throw Error('仅项目负责人可确认采用变更');const p=s.changes.find(p=>p.id===id);if(p?.status!=='待确认')throw Error('变更已处理');const f=s.files.find(f=>f.id===p.asset);if(version(f,p.version)?.status!=='已确认')throw Error('目标版本已被替代，请重新核对');const a=f.adoptions.find(a=>a.task===p.task);if(a)a.version=p.version;else f.adoptions.push({task:p.task,version:p.version,scope:'显式确认的演示关联',purpose:'输入'});p.status='已采用';}
+ function remove(s,id,role){requireEdit(role);const f=s.files.find(f=>f.id===id);if(f.adoptions.length||s.files.some(n=>n.sources.some(x=>x.id===id))||f.delivery?.status==='已提交')throw Error('存在固定引用或交付记录，请归档并保留历史');s.files=s.files.filter(f=>f.id!==id);s.recycle.push(f);}
+ function filter(s,q={}){return s.files.filter(f=>!f.archived&&(!q.category||f.category===q.category)&&(!q.stage||f.stage===q.stage||f.links.some(l=>l.stage===q.stage))&&(!q.route||f.routes.includes(q.route)||f.links.some(l=>l.route===q.route))&&(!q.status||latest(f).status===q.status)&&(!q.origin||f.origin===q.origin)&&(!q.text||[f.name,f.summary,...(f.tags||[]),...(!f.restricted&&(!f.ownerOnly||q.role==='owner')&&['md','txt','csv','json'].includes(ext(f))?f.versions.filter(v=>!v.parseError).map(v=>v.text):[])].join(' ').toLowerCase().includes(q.text.toLowerCase()))).sort((a,b)=>q.sort==='name'?a.name.localeCompare(b.name,'zh'):b.updated.localeCompare(a.updated));}
+ function diff(a,b){const x=a.split('\n'),y=b.split('\n'),setX=new Set(x),setY=new Set(y);return {removed:x.filter(l=>!setY.has(l)),added:y.filter(l=>!setX.has(l)),unchanged:x.filter(l=>setY.has(l)).length};}
+ return {seed,clone,categories,latest,version,ext,canEdit,draft,submit,confirm,adoptionDraft,applyChange,remove,filter,diff};
+})();

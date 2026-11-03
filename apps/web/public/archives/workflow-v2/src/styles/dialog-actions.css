@@ -1,0 +1,10 @@
+/* Shared modal actions; header close buttons and content controls stay in place. */
+dialog :is(footer, .rf-dialog-actions, .ov-modal-actions, .completion-actions) {
+ display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap;
+ gap:8px; width:100%; box-sizing:border-box; margin-top:20px;
+}
+/* Keep notes and validation messages above the final actions. */
+dialog :is(.tc-dialog-body, .pa-modal-body, .ov-modal-body, .ex-modal-body, .eln-modal-body, .rf-editor-content, .rf-quick-approval) {display:flex;flex-direction:column}
+dialog :is(.tc-dialog-body, .pa-modal-body, .ov-modal-body, .ex-modal-body, .eln-modal-body, .rf-editor-content, .rf-quick-approval) > :is(footer, .rf-dialog-actions, .ov-modal-actions) {order:1}
+dialog :is(footer, .rf-dialog-actions, .ov-modal-actions, .completion-actions) > button {flex:0 0 auto;width:auto;margin-top:0}
+#modal-body > footer, #modal-body form > footer {display:flex;justify-content:flex-end}

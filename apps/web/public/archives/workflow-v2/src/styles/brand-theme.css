@@ -1,0 +1,181 @@
+/* Brand purple sampled from the supplied reference. Semantic status colors stay distinct. */
+:root{--bg:#f5f4f9;--ink:#26203e;--line:#e7e5f1;--blue:#5a34ea;--blue-soft:#f1edff}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #a28aff}
+::selection{background:#e3dcff;color:#3618aa}
+.sidebar{background:#fcfbfe}
+.brand{color:#2d254c}
+.brand-mark span{background:#bfaeff;border:2px solid #fcfbfe}
+nav button.active{background:#eeeaff}
+.project-symbol{background:#ebe9f5;color:#5d5289}
+.breadcrumbs svg{color:#a29cb8}
+.demo-badge{color:#716991}
+.task-switch span{color:#ada8c0}
+.task-switch .down{color:#685f89}
+.task-menu{box-shadow:0 12px 40px #2b224c22}
+.btn{border:1px solid #e0dced}
+.user-message{background:#f2f0f9}
+.agent-label{color:#51428c}
+.assistant-message p{color:#5a527a}
+.chat-checks span{color:#5b537c}
+.suggestion-card{border:1px solid #e3dcff;background:#f9f8ff}
+.suggestion-card .suggestion-link{border-top:1px solid #e9e5fa}
+.copilot-composer{background:#fbfafd;border:1px solid #e0dcee}
+.flow-node{border:1px solid #e3e0ef}
+.flow-node:not(:last-child):after{border-top:1px solid #c0b9dd}
+.flow-node:not(:last-child):before{border-left:4px solid #c0b9dd}
+.flow-node.active{border-color:#8466f6;background:#f8f6ff}
+.node-mini{color:#a7a0c0}
+.node-mini .icon{color:#7f72b3}
+.node-mini .node-number{color:#9e98b7}
+.pipeline-footer{border-top:1px solid #efeef5}
+.node-tag{color:#6e639a;background:#f2f0f8}
+.ai-btn{border-color:#e3dcfc;background:#f9f8ff}
+.detail-tabs span{background:#f2f0f8}
+.model-view{background:#f6f5fa}
+.atom-key.h{background:#ccc7de}
+.viewport-controls button{border:1px solid #e5e2ef;color:#6e668e}
+.field input,.field select{border:1px solid #e2dfee}
+.field input:disabled{background:#f8f7fc}
+.smiles{color:#5a517b;background:#f6f5fa}
+.model-caption strong{color:#5a527a}
+.asset-file{background:#f1eefe;color:#6c55c6}
+.asset-item>svg{color:#9089ac}
+.toast{background:#2c244b;box-shadow:0 8px 24px #251e4022}
+dialog{box-shadow:0 25px 100px #261d4a44}
+dialog::backdrop{background:#271e4b55}
+#modal-body{color:#655c86}
+.config-layout .config-note{background:#f7f6fc}
+.run-progress{background:#ebe9f5}
+.run-log{background:#f8f7fc}
+.result-grid>div{background:#f7f6fc}
+.ai-diff{background:#f8f6ff;border:1px solid #e7e2fc}
+::-webkit-scrollbar-thumb{background:#d9d5e7}
+.dependency-canvas{background:#f8f7fc;border:1px solid #edebf5}
+.dependency-node{border:1px solid #e1ddef}
+.dependency-node.active{border-color:#8a6ef3;box-shadow:0 0 0 1px #8a6ef3}
+.node-pic{background:#f5f4fb;color:#7c6faf}
+.output-port strong{color:#504579}
+.port-dot{background:#ada3d1;outline:1px solid #bcb3df}
+.transfer-label{background:#f8f7fc;color:#776ba4}
+#graph-lines{stroke:#beb4e2}
+.macro-inputs>span{background:#f8f7fc}
+.thermal-preview{background:#f6f5fb}
+.binding-table th{background:#f7f6fb}
+.binding-table select{border:1px solid #e2dfef}
+.heat-legend i{background:linear-gradient(90deg,#725bc8,#83c2ce,#edcb86,#df8a6f)}
+.add-type label{background:#f6f5fb}
+.run-status-line{background:#efedf8}
+.project-phase-row{border-bottom:1px solid #f0eef6}
+.project-phases button.current{background:#eeeaff}
+.project-phases>span{color:#bcb6d1}
+.task-caret{border:1px solid #e0dcef;color:#6e6397}
+.location-chip{background:#ebe8f8;color:#685c96}
+.stage-task span:first-child{color:#918aad}
+.stage-task:hover{background:#f4f2fa}
+.task-title-switch .task-caret{stroke:#746b96}
+.task-location>span:last-child{color:#594e82}
+.node-out-dot{background:#ada3d1;outline:1px solid #bcb3df}
+.node-facts b{color:#4e4378}
+.analysis-preview span{background:#ddd8ef}
+.node-state-message{background:#f7f6fb}
+.analysis-toolbar button.active{border-color:#c5b6ff}
+.analysis-field{background:#f6f5fb}
+.result-mini{border:1px dashed #e0dcee}
+.result-mini.done{background:#f4f2fa}
+:root{--task-blue:#583fb8}
+.copilot-tool{border:1px solid #e4e1f0}
+.copilot-tool>svg{color:#7b71a0}
+.copilot-tool .tool-chevron{color:#8f87ae}
+.copilot-tool[aria-expanded=true]{border-color:#b9a9f8;background:#f4f1ff}
+.copilot-tool small{color:#8881a5;background:#f3f1f9}
+.copilot-tool .urgent-count.quiet{background:#f2f0f8}
+.copilot-dock{border-top:1px solid #e0dcf0;box-shadow:0 -8px 26px #31246410}
+.dock-heading{border-bottom:1px solid #efedf7}
+.asset-search{border:1px solid #e6e3f2;color:#928ab2}
+.asset-search input::placeholder{color:#8f87ac}
+.dock-asset{border-bottom:1px solid #f1eff7}
+.dock-asset:hover{background:#f7f6fc}
+.quote-asset:hover{background:#eee9ff}
+.dock-asset-section{color:#867ea3}
+.reference-chip{background:#f1edff;color:#5f4da2;border:1px solid #e1dbfa}
+.reference-chip button{color:#867ab5}
+.chat-drop-active{border-color:#876cef!important;background:#f5f2ff!important;box-shadow:inset 0 0 0 1px #b7a4ff}
+.reference-readback{border-top:1px solid #e3dff2;color:#6a5f94}
+.message-ref{border-top:1px solid #dfdbf0;color:#64569a}
+.todo-filter{color:#837ba3}
+.todo-filter.active{background:#f1edff}
+.doc-task{border-bottom:1px solid #efedf6}
+.task-checkbox{border:1.5px solid #c5c0da}
+.doc-task.done .task-checkbox{background:#7e71b1;border-color:#7e71b1}
+.doc-task-name:hover{background:#f6f4fc}
+.doc-task-name:focus{background:#f3f1fc;box-shadow:0 0 0 2px #e6e1fa}
+.doc-task.done .doc-task-name{color:#948dad}
+.task-prop{color:#837ba2}
+.task-prop:hover{background:#f0eef9}
+.task-prop.status-todo{background:#f1f0f7}
+.task-prop.status-progress{color:#6552ad;background:#f1effb}
+.task-prop.owner-prop{color:#6b5ba6;background:#f3f1fc}
+.task-node-link{color:#958eb0}
+.new-task-row{color:#9d97b5}
+.new-task-editor:empty:before{color:#9a93b5}
+.new-task-owner{color:#7e6ebb}
+.task-editor-help{color:#a19bb9}
+.todo-empty{color:#918aad}
+.bottom-task-summary{color:#6b628f}
+.bottom-task-summary>svg{color:#8e85af}
+.task-popover{border:1px solid #e3e0ef;box-shadow:0 8px 28px #2c215624}
+.task-popover-title{color:#928bad}
+.task-popover button:hover{background:#f2f0fb}
+.task-popover button.selected{background:#f1edff}
+.task-popover .member-avatar{background:#eeeafb;color:#7d71ac}
+.task-popover input[type=datetime-local]{border:1px solid #e5e1f2}
+.task-popover .date-actions .save-date{background:#f1edff}
+.task-popover .clear-date{color:#938caf}
+.task-popover .priority-normal{background:#b8b3cd}
+.research-stages .stage-label{color:#5d5383;background:#efedf6}
+.research-stages .stage-label:after{border-left:1px solid #dfdcec}
+.research-stages button{color:#746b95}
+.research-stages button:hover{background:#f3f1f9}
+.research-stages button.current{background:#eeeaff}
+.composer-action{color:#837aa6}
+.composer-action:hover,.composer-action[aria-expanded=true]{background:#eeeafc}
+.composer-context{color:#8e87ab}
+.composer-popover .task-popover-title{color:#938bb0}
+.composer-menu-row>svg{color:#867bae}
+.composer-menu-row strong{color:#483d73}
+.composer-menu-row small{color:#928ab2}
+.composer-menu-row kbd{color:#938bb2;border:1px solid #e8e5f2;background:#fbfafd}
+.composer-menu-divider{background:#efedf6}
+.composer-command-hint{color:#9e98b7}
+.composer-command-empty{color:#8c83ad}
+.project-context{border-bottom:1px solid #e2dfef}
+.project-context .project-phase-row{border-bottom:1px solid #ebe9f5}
+.project-mark{border:1px solid #e1dcf6;background:linear-gradient(145deg,#f7f5ff,#ede8ff);color:#5d45ba}
+.project-identity strong{color:#2e2551}
+.phase-label{color:#847ca4}
+.project-context .project-phases .phase-step{color:#7c749b}
+.phase-step:not(:last-child):after{background:#ddd9ed}
+.project-context .phase-step:hover{background:#f6f4fc;border-color:#e7e4f4}
+.phase-icon{border:1px solid #e3e0f0;background:#f7f6fb;color:#877ea8}
+.phase-copy>span{color:#635b83}
+.phase-copy small{color:#9e98b6}
+.project-context .project-phases .phase-step.current{background:#f2eeff;border-color:#e1d9ff}
+.phase-step.current .phase-icon{background:#5d38e9;border-color:#5d38e9;box-shadow:0 2px 5px #5331d51c}
+.phase-step.current .phase-copy>span{color:#4c2fbc}
+.phase-step.current .phase-copy small{color:#6e56ca}
+.project-context .research-stages .stage-label{border-right:1px solid #ebe9f5;color:#756d96}
+.project-context .stage-label svg{color:#9188b2}
+.research-stage-track{scrollbar-color:#e3dff1 transparent}
+.project-context .research-stages .research-step{color:#787098}
+.stage-number{color:#9b94b7;border:1px solid #e8e5f2;background:#fbfafd}
+.project-context .research-step:hover{background:#f6f4fc;color:#4e3c94}
+.project-context .research-stages .research-step.current{border-color:#e3dcff;background:#f3f0ff;color:#5030ca}
+.research-step.current .stage-number{background:#603ce8;border-color:#603ce8}
+.stage-task-count{border-left:1px solid #dcd5f7;color:#7c6bbc}
+.project-context button:focus-visible{outline:2px solid #7453f4}
+:root{--blue:#5f36fc;--blue-soft:#f1edff;--bg:#f6f5fa;--line:#e9e6f1}
+.btn.primary,.send-btn,.phase-step.current .phase-icon,.research-step.current .stage-number{background:#5f36fc;border-color:#5f36fc;color:white}
+.project-context .phase-step.current .phase-copy>span,.project-context .research-stages .research-step.current{color:#5f36fc}
+.project-context .project-phases .phase-step.current{background:#f1edff;border-color:#ded4ff}
+.project-context .research-stages .research-step.current{background:#f1edff;border-color:#e0d6ff}
+.dependency-node.active{border-color:#8a6afc;box-shadow:0 0 0 1px #8a6afc}

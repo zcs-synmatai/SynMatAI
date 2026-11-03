@@ -1,0 +1,19 @@
+/* V2: a single phase row; substages belong to their parent menu. */
+.project-context .research-stages,.rf-stage-scroll,.rf-scroll-hint{display:none!important}
+.project-context .project-phase-row{border-bottom:0}
+.phase-step.has-substages{gap:8px}
+.phase-sub-caret{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;margin-left:7px;flex:none;transition:transform .15s}
+.phase-step[aria-expanded="true"] .phase-sub-caret{transform:rotate(180deg)}
+.phase-submenu{position:fixed;z-index:1500;box-sizing:border-box;padding:6px;background:#fff;border:1px solid #e3e0ee;border-radius:12px;box-shadow:0 10px 32px #26203e20;overflow-y:auto;overscroll-behavior:contain;color:#243044}
+.phase-submenu[hidden]{display:none}
+.phase-submenu-heading{display:flex;align-items:center;justify-content:space-between;padding:10px 10px 12px;border-bottom:1px solid #eeedf3;margin-bottom:5px}
+.phase-submenu-heading strong{font-size:13px}.phase-submenu-heading>span{font-size:12px;color:#7c8494}
+.phase-submenu button{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:0;background:transparent;border-radius:7px;padding:10px 9px;cursor:pointer;color:#243044}
+.phase-submenu button:hover{background:#f6f5fa}.phase-submenu button[aria-checked="true"]{background:#f0ebff;color:#5f36fc}
+.phase-submenu button:focus-visible{outline:2px solid #5f36fc;outline-offset:-2px}
+.phase-sub-number{width:25px;height:25px;display:grid;place-items:center;border:1px solid #e4e5ec;border-radius:50%;font-size:11px;color:#7d8495;flex:none}
+.phase-submenu button[aria-checked="true"] .phase-sub-number{color:white;background:#5f36fc;border-color:#5f36fc}
+.phase-sub-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}.phase-sub-copy strong{font-size:13px;font-weight:600}.phase-sub-copy small{font-size:11px;color:#7d8495}
+.phase-sub-status{display:flex;align-items:center;gap:5px;font-size:11px;color:#8b92a1;white-space:nowrap}.phase-sub-status i{width:5px;height:5px;border-radius:50%;background:currentColor}
+.phase-sub-status[data-status="进行中"]{color:#5f36fc}.phase-sub-status[data-status="已完成"]{color:#249787}.phase-sub-check{width:12px;font-size:13px;color:#5f36fc}
+@media(prefers-reduced-motion:reduce){.phase-sub-caret{transition:none}}

@@ -1,0 +1,246 @@
+/* Unified project workspace shell: one conversation rail, one preview surface. */
+:root{--workspace-conversation-width:216px;--workspace-chat-width:clamp(288px,30vw,480px);--workspace-divider:8px}
+
+/* The global navigation is a fixed icon rail; labels appear on hover or focus. */
+.workspace-merged-nav-hidden{display:none!important}
+.workspace-view-switch{display:inline-flex;flex:none;align-items:center;gap:3px;padding:0;border:0;background:transparent;box-shadow:none}
+.workspace-view-button{position:relative;display:grid;place-items:center;width:38px;height:38px;padding:0;border-radius:9px;color:#806f91;background:transparent;transition:background-color .16s ease-out,color .16s ease-out,box-shadow .16s ease-out}
+.workspace-view-button svg{width:19px;height:19px;stroke-width:1.8}
+.workspace-view-button:hover{color:#5f36fc;background:#eee9fa}
+.workspace-view-button[aria-pressed="true"]{color:#fff;background:#5f36fc;box-shadow:0 3px 9px #5f36fc2b}
+.workspace-view-button:focus-visible{outline:2px solid #7b54ed;outline-offset:2px}
+.workspace-view-label{display:none}
+body.workspace-nav-collapsed .sidebar{width:70px;padding:24px 12px}
+body.workspace-nav-collapsed .app{margin-left:70px}
+body.workspace-nav-collapsed .brand{width:43px;height:45px;margin:0 0 31px;padding:0;overflow:hidden}
+body.workspace-nav-collapsed .brand img{width:auto;height:45px;max-width:none;object-fit:contain;object-position:left}
+body.workspace-nav-collapsed .workspace-label,body.workspace-nav-collapsed .sidebar nav button span,body.workspace-nav-collapsed .sidebar nav small,body.workspace-nav-collapsed .sidebar-project,body.workspace-nav-collapsed .connection,body.workspace-nav-collapsed .profile>div,body.workspace-nav-collapsed .profile-dots,body.workspace-nav-collapsed .help-btn{display:none}
+body.workspace-nav-collapsed .sidebar nav button{padding:12px;justify-content:center}
+body.workspace-nav-collapsed .profile{justify-content:center}
+body.workspace-nav-collapsed .sidebar-archive summary{justify-content:center;padding-inline:12px}
+body.workspace-nav-collapsed .sidebar-archive summary span,body.workspace-nav-collapsed .sidebar-archive-chevron{display:none}
+body.workspace-nav-collapsed .sidebar [data-sidebar-tooltip]{position:relative;overflow:visible}
+body.workspace-nav-collapsed .sidebar [data-sidebar-tooltip]::after{content:attr(data-sidebar-tooltip);position:absolute;z-index:90;left:calc(100% + 11px);top:50%;min-width:max-content;padding:6px 9px;border:1px solid #dcd4e8;border-radius:7px;background:#2f2739;color:#fff;box-shadow:0 7px 20px #2b1d3d24;font-size:11px;font-weight:500;line-height:1.35;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transform:translate(-4px,-50%);transition:opacity .14s ease-out,transform .16s ease-out,visibility .16s}
+body.workspace-nav-collapsed .sidebar [data-sidebar-tooltip]::before{content:"";position:absolute;z-index:91;left:calc(100% + 6px);top:50%;width:8px;height:8px;border-left:1px solid #dcd4e8;border-bottom:1px solid #dcd4e8;background:#2f2739;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-50%) rotate(45deg);transition:opacity .14s ease-out,visibility .16s}
+body.workspace-nav-collapsed .sidebar [data-sidebar-tooltip]:hover::after,body.workspace-nav-collapsed .sidebar [data-sidebar-tooltip]:focus-visible::after{opacity:1;visibility:visible;transform:translate(0,-50%)}
+body.workspace-nav-collapsed .sidebar [data-sidebar-tooltip]:hover::before,body.workspace-nav-collapsed .sidebar [data-sidebar-tooltip]:focus-visible::before{opacity:1;visibility:visible}
+
+/* The conversation-list switch keeps one stable home beside the active Agent. */
+.workspace-conversation-toggle{position:relative;flex:none;display:grid;place-items:center;width:30px;height:30px;padding:0;border:1px solid transparent;border-radius:7px;color:#756a82;background:transparent;transition:color .14s ease-out,background-color .14s ease-out,border-color .14s ease-out}
+.workspace-conversation-toggle:hover{color:#5f36fc;background:#f4f0ff;border-color:#e4dbff;filter:none}
+.workspace-conversation-toggle:focus-visible{outline:2px solid #8f72e8;outline-offset:2px}
+.workspace-conversation-toggle svg{width:17px;height:17px}
+.workspace-conversation-toggle.is-expanded{color:#5f36fc;background:#eee9ff}
+.workspace-conversation-state{position:absolute;right:2px;bottom:3px;width:5px;height:5px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .16s ease-out}
+.workspace-conversation-toggle.is-expanded .workspace-conversation-state{transform:rotate(135deg)}
+.workspace-agent-heading{min-width:0;display:flex;align-items:center;gap:7px}
+.workspace-agent-divider{flex:none;width:1px;height:20px;background:#e3deea}
+.workspace-conversation-scrim{display:none}
+body.workspace-conversations-collapsed{--workspace-conversation-width:0px}
+
+ body.task-workspace-active,body.flow-canvas-active{overflow:hidden}
+ body.task-workspace-active .app,body.flow-canvas-active .app{position:relative;height:100dvh;overflow:hidden;background:#f6f5fa}
+
+ /* Task breadcrumbs live inside the AI rail; the flow breadcrumb remains above its rail. */
+ body.task-workspace-active .topbar{display:none}
+ body.flow-canvas-active .topbar{position:absolute;left:0;top:0;z-index:30;width:var(--workspace-chat-width);height:48px;padding:0 16px;border-right:1px solid #e5e0ec;background:#fff}
+ body.flow-canvas-active .topbar .demo-badge,body.flow-canvas-active .topbar>#export{display:none}
+ body.flow-canvas-active .topbar .breadcrumbs{min-width:0;overflow:hidden;gap:7px;white-space:nowrap}
+ body.flow-canvas-active .topbar .breadcrumbs>*:not(strong){display:none}
+ body.flow-canvas-active .topbar .breadcrumbs strong{overflow:hidden;text-overflow:ellipsis;font-weight:600;color:#463b55}
+
+ /* Task workspace */
+ body.task-workspace-active .project-context,body.task-workspace-active .workbench-flow-nav,body.task-workspace-active .task-header{display:none!important}
+ body.task-workspace-active:has(.research-desk:not(.hidden)) .workbench{display:none!important}
+ body.task-workspace-active .research-desk{--chat-width:var(--workspace-chat-width)!important;position:absolute;inset:0;z-index:2;width:100%;height:100%!important;min-height:0;margin:0;border:0;border-radius:0;grid-template-columns:var(--workspace-conversation-width) var(--workspace-chat-width) var(--workspace-divider) minmax(0,1fr);background:#fff;transition:grid-template-columns .18s ease-out}
+ body.task-workspace-active .workspace-conversation-rail{grid-column:1;grid-row:1;min-width:0;height:100dvh;display:flex;flex-direction:column;border-right:1px solid #e8e3ed;background:#faf9fc;overflow:hidden;opacity:1;visibility:visible;transition:opacity .14s ease-out,transform .18s ease-out,visibility .18s}
+ body.task-workspace-active .workspace-conversation-rail>header{height:50px;flex:0 0 50px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px 0 14px;border-bottom:1px solid #ebe7f0}
+ body.task-workspace-active .workspace-conversation-rail>header strong{min-width:0;display:flex;align-items:center;gap:8px;font-size:12px;color:#51465f;white-space:nowrap}
+ body.task-workspace-active .workspace-conversation-rail>header strong svg{width:15px;height:15px;color:#7650df}
+ body.task-workspace-active .workspace-conversation-rail>header [data-conversation-rail-toggle]{display:none}
+ body.task-workspace-active .workspace-conversation-rail>nav{flex:1;display:flex;flex-direction:column;gap:4px;padding:10px 8px;overflow:auto}
+ body.task-workspace-active .workspace-conversation-rail>nav button{width:100%;min-height:52px;display:flex;align-items:flex-start;gap:9px;padding:9px;border-radius:8px;color:#71677e;text-align:left}
+ body.task-workspace-active .workspace-conversation-rail>nav button>svg{width:16px;height:16px;margin-top:2px;color:#8a7b9d}
+ body.task-workspace-active .workspace-conversation-rail>nav button>span{min-width:0;display:block}
+ body.task-workspace-active .workspace-conversation-rail>nav button strong,body.task-workspace-active .workspace-conversation-rail>nav button small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ body.task-workspace-active .workspace-conversation-rail>nav button strong{font-size:12px;font-weight:600;color:#51465f}
+ body.task-workspace-active .workspace-conversation-rail>nav button small{margin-top:2px;font-size:10px;color:#978da2}
+ body.task-workspace-active .workspace-conversation-rail>nav button[aria-current="true"]{background:#eee8ff;color:#5f36fc}
+ body.task-workspace-active .workspace-conversation-rail>nav button[aria-current="true"]>svg,body.task-workspace-active .workspace-conversation-rail>nav button[aria-current="true"] strong{color:#5f36fc}
+ body.task-workspace-active .workspace-conversation-rail>footer{padding:13px 14px 16px;border-top:1px solid #ebe7f0}
+ body.task-workspace-active .workspace-conversation-rail>footer span,body.task-workspace-active .workspace-conversation-rail>footer strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ body.task-workspace-active .workspace-conversation-rail>footer span{font-size:10px;color:#958c9e}
+ body.task-workspace-active .workspace-conversation-rail>footer strong{margin-top:3px;font-size:11px;font-weight:600;color:#51465f}
+ body.workspace-conversations-collapsed.task-workspace-active .workspace-conversation-rail{opacity:0;visibility:hidden;pointer-events:none}
+ body.task-workspace-active .workspace-conversation-peek{position:absolute;z-index:24;top:92px;bottom:0;left:0;width:min(216px,calc(100% - 18px));height:auto;grid-column:auto;grid-row:auto;border:1px solid #e4deeb;border-left:0;border-radius:0 12px 12px 0;background:#faf9fc;box-shadow:14px 12px 36px #2412381f;opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-10px);transition:opacity .14s ease-out,transform .18s ease-out,visibility .18s}
+ body.workspace-conversations-collapsed.task-workspace-active .workspace-conversation-peek.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+ body.task-workspace-active .workspace-conversation-peek>header{flex-basis:46px;height:46px}
+ body.task-workspace-active .research-chat{grid-column:2;grid-row:1;order:0;padding-top:0;border-right:0;background:#fff}
+ body.task-workspace-active .research-current-agent{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:8px}
+ body.task-workspace-active .research-current-agent>svg{grid-row:1/3;width:18px;height:18px;color:#7650df}
+ body.task-workspace-active .research-current-agent strong,body.task-workspace-active .research-current-agent small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ body.task-workspace-active .research-current-agent small{font-size:10px;color:#978da2}
+ body.task-workspace-active .research-panel-head{height:54px;padding-inline:12px 16px;background:#fff}
+ body.task-workspace-active .research-panel-head>.workspace-agent-heading,body.task-workspace-active .copilot>.panel-title>.workspace-agent-heading{min-width:0}
+ body.task-workspace-active .research-panel-head>.workspace-agent-heading{flex:1}
+ body.task-workspace-active .workspace-chat-breadcrumb{height:38px;flex:0 0 38px;display:flex;align-items:center;gap:7px;min-width:0;padding:0 16px;border-bottom:1px solid #eeeaf2;background:#fff;color:#5d5269;font-size:11px;font-weight:600}
+ body.task-workspace-active .workspace-chat-breadcrumb svg{width:13px;height:13px;flex:none;color:#7958db}
+ body.task-workspace-active .workspace-chat-breadcrumb svg:last-child{margin-left:auto;color:#afa5b9}
+ body.task-workspace-active .workspace-chat-breadcrumb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .workspace-column-resizer{position:relative;align-self:stretch;height:100dvh;cursor:col-resize;touch-action:none;border:0;background:transparent}
+.workspace-column-resizer:before{content:"";position:absolute;inset-block:0;left:50%;width:1px;transform:translateX(-50%);background:#e3deea;pointer-events:none}
+ .workspace-column-resizer:after{content:"";position:absolute;left:50%;top:50%;width:3px;height:42px;transform:translate(-50%,-50%);border-radius:999px;background:#b9abc9;opacity:.72;transition:height .16s ease-out,background-color .16s ease-out,opacity .16s ease-out}
+ .workspace-column-resizer:hover:after,.workspace-column-resizer:focus-visible:after{height:54px;background:#7650df;opacity:1}
+ .workspace-column-resizer:focus-visible{outline:2px solid #8f72e8;outline-offset:-2px}
+ body.task-workspace-active .workspace-column-resizer{grid-column:3;grid-row:1;z-index:5}
+ body.task-workspace-active .research-preview{grid-column:4;grid-row:1;height:100dvh;background:#fff}
+ body.task-workspace-active .workspace-preview-head{height:54px;flex:0 0 54px;display:flex;align-items:center;gap:10px;padding:0 10px 0 12px;border-bottom:1px solid #e9e5ee;background:#faf9fc;overflow:hidden}
+body.task-workspace-active .workspace-preview-head>.project-workspace-view-switch{margin-right:0;box-shadow:none}
+ body.task-workspace-active .research-tabs{flex:1;min-width:0;min-height:0;height:36px;padding:0 2px 0 10px;align-items:center;gap:6px;border:0;border-left:1px solid #e4dfeb;background:transparent;overflow-x:auto;scrollbar-width:none}
+ body.task-workspace-active .research-tabs::-webkit-scrollbar{display:none}
+ body.task-workspace-active .research-tabs:empty{display:none}
+ body.task-workspace-active .research-tab{display:flex;align-items:center;flex:0 1 320px;min-width:132px;max-width:min(340px,48vw);height:34px;border:1px solid transparent;border-radius:8px;color:#71677c;transition:background-color .14s ease-out,border-color .14s ease-out,color .14s ease-out}
+ body.task-workspace-active .research-tab:hover{background:#f1eef5;color:#3f354a}
+ body.task-workspace-active .research-tab.is-active{background:#fff;border-color:#dcd5e7;color:#5f36fc}
+ body.task-workspace-active .research-tab>[role="tab"]{display:flex;align-items:center;flex:1;min-width:0;height:100%;gap:7px;padding:0 6px 0 10px;border-radius:7px 0 0 7px;color:inherit;font-size:12px;box-shadow:none}
+ body.task-workspace-active .research-tab>[role="tab"]>svg{width:15px;height:15px;flex:none}
+ body.task-workspace-active .research-tab-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ body.task-workspace-active .research-tab-close{display:flex;align-items:center;justify-content:center;flex:0 0 28px;width:28px;height:28px;margin-right:2px;padding:0;border-radius:6px;color:#978ca2}
+ body.task-workspace-active .research-tab-close svg{width:12px;height:12px;transform:rotate(45deg)}
+ body.task-workspace-active .research-tab-close:hover{background:#ece6f5;color:#5130c8}
+ body.task-workspace-active .research-tab>[role="tab"]:focus-visible,body.task-workspace-active .research-tab-close:focus-visible{outline:2px solid #8f72e8;outline-offset:-2px}
+
+ /* Task canvas uses exactly the same columns instead of floating chat over it. */
+ body.task-workspace-active .research-desk.task-canvas-active{display:grid;position:absolute;grid-template-columns:var(--workspace-conversation-width) var(--workspace-chat-width) var(--workspace-divider) minmax(0,1fr);overflow:hidden}
+ body.task-workspace-active .task-canvas-active>.workspace-conversation-rail{grid-column:1}
+ body.task-workspace-active .task-canvas-active>.research-chat{display:flex;grid-column:2;position:relative!important;inset:auto!important;width:auto!important;height:auto!important;max-width:none!important;border:0;border-radius:0;box-shadow:none;overflow:hidden}
+ body.task-workspace-active .task-canvas-active>.research-resizer{display:block;grid-column:3}
+ body.task-workspace-active .task-canvas-surface{position:relative;inset:auto;grid-column:4;height:100dvh;min-width:0}
+ body.task-workspace-active .task-canvas-surface .fc-toolbar{left:18px;right:270px}
+ body.task-workspace-active .project-workspace-canvas-switch{position:absolute;z-index:9;top:12px;left:18px}
+ body.flow-canvas-active .project-workspace-flow-switch.canvas{position:absolute;z-index:9;top:82px;left:18px}
+
+ /* Calculation/model workspaces keep their existing tools inside the same shell. */
+ body.task-workspace-active:has(.workbench:not(.hidden)) .research-desk{display:none!important}
+ body.task-workspace-active .workbench:not(.hidden){position:absolute;inset:0;z-index:2;display:grid;grid-template-columns:var(--workspace-conversation-width) var(--workspace-chat-width) var(--workspace-divider) minmax(0,1fr);gap:0;width:100%;height:100dvh;max-width:none;margin:0;padding:0;background:#fff;overflow:hidden;transition:grid-template-columns .18s ease-out}
+ body.task-workspace-active .workbench>.workspace-conversation-rail{grid-column:1}
+body.task-workspace-active .workbench>.copilot{grid-column:2;grid-row:1;order:0;position:relative;top:auto;width:auto;height:100dvh;min-height:0;max-height:none;margin:0;padding-top:0;border:0;border-radius:0;overflow:hidden;background:#fff}
+ body.task-workspace-active .workbench>.workspace-static-resizer{z-index:6}
+ body.task-workspace-active .workbench>.right-workspace{grid-column:4;grid-row:1;min-width:0;height:100dvh;overflow:auto;padding:12px 14px 24px;background:#f6f5fa;grid-auto-rows:max-content;align-content:start;scroll-padding-block:12px 24px;overscroll-behavior:contain}
+ body.task-workspace-active .workbench>.right-workspace>.flow-panel,
+ body.task-workspace-active .workbench>.right-workspace>.detail-panel,
+ body.task-workspace-active .workbench>.right-workspace>.bottom-panel{min-height:max-content}
+ body.task-workspace-active .calculation-workspace-head{position:sticky;top:0;z-index:8;display:flex;justify-content:flex-start;margin:-12px -14px 12px;padding:9px 14px;border-bottom:1px solid #e6e1eb;background:#faf9fc}
+
+ /* Project flow uses the same persistent rail and full-height preview. */
+ body.flow-canvas-active .rf-page{position:absolute;inset:0;z-index:2;width:100%;height:100dvh;grid-template-columns:var(--workspace-chat-width) var(--workspace-divider) minmax(0,1fr)!important;background:#fff}
+ body.flow-canvas-active .rf-copilot{grid-column:1;padding-top:48px;border-right:0;overflow:hidden}
+ body.flow-canvas-active .rf-workspace-resizer{grid-column:2;z-index:7;background:#f5f2f8;border-inline:1px solid #e2ddea}
+ body.flow-canvas-active .rf-main{grid-column:3!important;position:relative;height:100dvh;min-width:0;padding:0;overflow:hidden;background:#f6f5fa}
+ body.flow-canvas-active .rf-page.canvas-v2 .rf-copilot.fc-agent{position:relative!important;inset:auto!important;width:auto!important;height:auto!important;max-width:none;border:0;border-radius:0;box-shadow:none;z-index:auto}
+ body.flow-canvas-active .rf-page.canvas-v2 .fc-agent .rf-copilot-heading{height:54px;min-height:54px;padding-inline:16px;border-color:#ece8f0}
+ body.flow-canvas-active .rf-page.canvas-v2 .fc-agent.fc-agent-collapsed{height:auto;bottom:auto!important}
+ body.flow-canvas-active .rf-page.canvas-v2 .rf-main{--fc-rail-width:0px;--pv3-agent-width:0px!important}
+ body.flow-canvas-active .project-v3 .fc-agent .rf-copilot-heading>.icon-btn{display:inline-flex!important}
+ body.flow-canvas-active .fc-toolbar{left:18px}
+ body.flow-canvas-active .project-v3 .fc-bottom{left:18px!important;width:auto;max-width:calc(100% - 270px)}
+ body.research-flow-active:not(.flow-canvas-active) .project-workspace-flow-switch{margin-bottom:14px}
+
+ /* V3 has legacy one-column rules; the ID-scoped shell is the final authority. */
+ body.research-flow-active.flow-v3-active #research-flow-page.rf-page.project-v3{display:grid!important;grid-template-columns:var(--workspace-chat-width) var(--workspace-divider) minmax(0,1fr)!important;height:100dvh!important}
+ body.research-flow-active.flow-v3-active #research-flow-page>.rf-copilot{display:flex!important;grid-column:1!important;position:relative!important;inset:auto!important;width:auto!important;height:auto!important;max-width:none!important;padding-top:48px;border:0;border-radius:0;box-shadow:none;overflow:hidden}
+ body.research-flow-active.flow-v3-active #research-flow-page>.rf-workspace-resizer{display:block!important;grid-column:2!important}
+ body.research-flow-active.flow-v3-active #research-flow-page>.rf-main{display:block!important;grid-column:3!important;position:relative!important;inset:auto!important;width:auto!important;height:100dvh!important;min-width:0}
+ body.research-flow-active.flow-v3-active:has(#research-flow-page.chat-collapsed) .topbar{width:56px;padding:0}
+ body.research-flow-active.flow-v3-active:has(#research-flow-page.chat-collapsed) .topbar .breadcrumbs{display:none}
+ body.research-flow-active.flow-v3-active #research-flow-page.rf-page.project-v3.chat-collapsed{grid-template-columns:56px var(--workspace-divider) minmax(0,1fr)!important}
+ body.research-flow-active.flow-v3-active #research-flow-page.chat-collapsed>.rf-copilot{padding-top:48px}
+
+@media(max-width:740px){
+ body.task-workspace-active .research-desk{margin:0;border-radius:0}
+ body.flow-canvas-active .rf-page{height:auto;min-height:100dvh}
+ .rf-workspace-resizer,.workspace-static-resizer,.research-resizer{display:none!important}
+ body.workspace-conversations-forced.task-workspace-active .workspace-conversation-scrim{position:fixed;z-index:30;inset:0;display:block;background:#21152f3d;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease-out,visibility .18s}
+ body.workspace-conversations-forced.task-workspace-active .workspace-conversation-rail{position:fixed;z-index:31;top:0;bottom:0;left:70px;width:min(320px,calc(100vw - 82px));height:100dvh;opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-14px);box-shadow:14px 0 42px #24123826}
+ body.workspace-conversations-overlay-open.task-workspace-active .workspace-conversation-scrim{opacity:1;visibility:visible;pointer-events:auto}
+ body.workspace-conversations-overlay-open.task-workspace-active .workspace-conversation-rail{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+ body.workspace-conversations-overlay-open.task-workspace-active .workspace-conversation-rail>header [data-conversation-rail-toggle]{display:inline-flex}
+ body.task-workspace-active .workspace-conversation-peek{display:none!important}
+}
+
+@media(max-width:1000px) and (min-width:741px){
+ body.task-workspace-active .topbar{left:48px}
+}
+
+@media(max-width:420px){body.workspace-conversations-forced.task-workspace-active .workspace-conversation-rail{left:58px;width:calc(100vw - 70px)}}
+
+@media(max-width:740px){body.task-workspace-active .research-tab{max-width:min(240px,52vw)}}
+
+@media(prefers-reduced-motion:reduce){
+ body.task-workspace-active .research-desk,body.task-workspace-active .workbench:not(.hidden),body.task-workspace-active .workspace-conversation-rail,.workspace-conversation-toggle{transition:none}
+}
+
+/* Flow V3 shares the workbench's conversation rail and chat behavior. */
+body.flow-canvas-active .topbar{display:none}
+body.research-flow-active.flow-v3-active #research-flow-page.rf-page.project-v3{
+ display:grid!important;
+ grid-template-columns:var(--workspace-conversation-width) var(--workspace-chat-width) var(--workspace-divider) minmax(0,1fr)!important;
+ height:100dvh!important;
+ transition:grid-template-columns .18s ease-out;
+}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail{
+ grid-column:1;grid-row:1;min-width:0;height:100dvh;display:flex;flex-direction:column;
+ border-right:1px solid #e8e3ed;background:#faf9fc;overflow:hidden;opacity:1;visibility:visible;
+ transition:opacity .14s ease-out,transform .18s ease-out,visibility .18s;
+}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>header{height:50px;flex:0 0 50px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px 0 14px;border-bottom:1px solid #ebe7f0}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>header strong{min-width:0;display:flex;align-items:center;gap:8px;font-size:12px;color:#51465f;white-space:nowrap}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>header strong svg{width:15px;height:15px;color:#7650df}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>header [data-conversation-rail-toggle]{display:none}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav{flex:1;display:flex;flex-direction:column;gap:4px;padding:10px 8px;overflow:auto}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button{width:100%;min-height:52px;display:flex;align-items:flex-start;gap:9px;padding:9px;border-radius:8px;color:#71677e;text-align:left}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button>svg{width:16px;height:16px;margin-top:2px;color:#8a7b9d}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button>span{min-width:0;display:block}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button strong,body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button strong{font-size:12px;font-weight:600;color:#51465f}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button small{margin-top:2px;font-size:10px;color:#978da2}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button[aria-current=true]{background:#eee8ff;color:#5f36fc}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button[aria-current=true]>svg,body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>nav button[aria-current=true] strong{color:#5f36fc}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>footer{padding:13px 14px 16px;border-top:1px solid #ebe7f0}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>footer span,body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>footer strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>footer span{font-size:10px;color:#958c9e}
+body.flow-canvas-active #research-flow-page>.workspace-conversation-rail>footer strong{margin-top:3px;font-size:11px;font-weight:600;color:#51465f}
+body.workspace-conversations-collapsed.flow-canvas-active #research-flow-page>.workspace-conversation-rail{opacity:0;visibility:hidden;pointer-events:none}
+body.research-flow-active.flow-v3-active #research-flow-page>.flow-workspace-chat{
+ display:flex!important;grid-column:2!important;grid-row:1;position:relative!important;inset:auto!important;
+ width:auto!important;height:100dvh!important;max-width:none!important;padding-top:0!important;
+ border:0;border-radius:0;box-shadow:none;overflow:hidden;background:#fff;
+}
+body.flow-canvas-active .flow-workspace-chat .workspace-chat-breadcrumb{height:38px;flex:0 0 38px;display:flex;align-items:center;gap:7px;min-width:0;padding:0 16px;border-bottom:1px solid #eeeaf2;background:#fff;color:#5d5269;font-size:11px;font-weight:600}
+body.flow-canvas-active .flow-workspace-chat .workspace-chat-breadcrumb svg{width:13px;height:13px;flex:none;color:#7958db}
+body.flow-canvas-active .flow-workspace-chat .workspace-chat-breadcrumb svg:last-child{margin-left:auto;color:#afa5b9}
+body.flow-canvas-active .flow-workspace-chat .workspace-chat-breadcrumb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.flow-canvas-active .flow-workspace-chat .research-panel-head{height:54px;min-height:54px;display:flex;align-items:center;padding:0 16px 0 12px;border-bottom:1px solid #ece8f0;background:#fff}
+body.flow-canvas-active .flow-workspace-chat .research-panel-head>.workspace-agent-heading{flex:1;min-width:0}
+body.flow-canvas-active .flow-workspace-chat .research-current-agent{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:8px}
+body.flow-canvas-active .flow-workspace-chat .research-current-agent>svg{grid-row:1/3;width:18px;height:18px;color:#7650df}
+body.flow-canvas-active .flow-workspace-chat .research-current-agent strong,body.flow-canvas-active .flow-workspace-chat .research-current-agent small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.flow-canvas-active .flow-workspace-chat .research-current-agent small{font-size:10px;color:#978da2}
+body.research-flow-active.flow-v3-active #research-flow-page>.rf-workspace-resizer{display:block!important;grid-column:3!important;grid-row:1}
+body.research-flow-active.flow-v3-active #research-flow-page>.rf-main{display:block!important;grid-column:4!important;grid-row:1;position:relative!important;inset:auto!important;width:auto!important;height:100dvh!important;min-width:0}
+body.flow-canvas-active .workspace-conversation-peek{position:absolute;z-index:24;top:92px;bottom:0;left:0;width:min(216px,calc(100% - 18px));height:auto;border:1px solid #e4deeb;border-left:0;border-radius:0 12px 12px 0;background:#faf9fc;box-shadow:14px 12px 36px #2412381f;opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-10px);transition:opacity .14s ease-out,transform .18s ease-out,visibility .18s}
+body.workspace-conversations-collapsed.flow-canvas-active .workspace-conversation-peek.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+body.flow-canvas-active .workspace-conversation-peek>header{flex-basis:46px;height:46px}
+body.flow-canvas-active .pv3-workspace-state-switch button span{display:block}
+
+@media(max-width:740px){
+ body.flow-canvas-active{--workspace-divider:0px}
+ body.workspace-conversations-forced.flow-canvas-active .workspace-conversation-scrim{position:fixed;z-index:30;inset:0;display:block;background:#21152f3d;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease-out,visibility .18s}
+ body.workspace-conversations-forced.flow-canvas-active #research-flow-page>.workspace-conversation-rail{position:fixed;z-index:31;top:0;bottom:0;left:70px;width:min(320px,calc(100vw - 82px));height:100dvh;opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-14px);box-shadow:14px 0 42px #24123826}
+ body.workspace-conversations-overlay-open.flow-canvas-active .workspace-conversation-scrim{opacity:1;visibility:visible;pointer-events:auto}
+ body.workspace-conversations-overlay-open.flow-canvas-active #research-flow-page>.workspace-conversation-rail{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+ body.workspace-conversations-overlay-open.flow-canvas-active #research-flow-page>.workspace-conversation-rail>header [data-conversation-rail-toggle]{display:inline-flex}
+ body.flow-canvas-active .workspace-conversation-peek{display:none!important}
+}
+
+@media(max-width:420px){body.workspace-conversations-forced.flow-canvas-active #research-flow-page>.workspace-conversation-rail{left:58px;width:calc(100vw - 70px)}}

@@ -1,0 +1,7 @@
+{
+  "version": "V2",
+  "startedAt": "2026-10-26",
+  "visualBaseline": "brand-purple-v4",
+  "previousSnapshot": "versions/v1",
+  "change": "Shared parent-phase dropdown navigation for project flow and task workspaces"
+}

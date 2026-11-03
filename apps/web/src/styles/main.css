@@ -1,0 +1,35 @@
+/* Load order preserves the approved v4 appearance during migration. */
+@import url("./base.css");
+@import url("./workflow.css");
+@import url("./layout.css");
+@import url("./copilot.css");
+@import url("./project-navigation.css");
+@import url("./brand-theme.css");
+@import url("./workbench.css");
+@import url("./research.css");
+@import url("./research-flow.css");
+
+@import url("./project-overview.css");
+
+@import url("./project-assets.css");
+@import url("./experiments.css");
+
+@import url("./eln.css");
+
+@import url("./phase-navigation-v2.css");
+
+@import url("./task-experiments.css");
+
+@import url("./unified-tasks.css");
+
+@import url("./task-canvas.css");
+
+@import url("./todo-list-polish.css");
+
+@import url("./dialog-actions.css");
+
+@import url("project-flow-v3.css");
+
+@import url("./workbench-navigation.css");
+@import url("./projects.css");
+@import url("./workspace-shell.css");

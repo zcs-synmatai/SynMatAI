@@ -1,0 +1,20 @@
+{
+  "name": "synmatai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SynMatAI numerical simulation workbench",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node scripts/dev-server.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test scripts/dev-server.test.mjs",
+    "test:workspace": "node --test scripts/project-workspace-smoke.test.mjs"
+  }
+}

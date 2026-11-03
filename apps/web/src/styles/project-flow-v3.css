@@ -1,0 +1,165 @@
+/* V3 only. Frozen V2 loads its own styles and never imports this file. */
+.flow-v3-active .rf-project-context{display:none!important}
+.flow-v3-active .rf-page.project-v3{height:calc(100dvh - var(--rf-top-height,48px));--rf-context-height:0px;grid-template-columns:minmax(0,1fr)}
+.project-v3 .pv3-main{--pv3-agent-width:310px;min-height:0}
+.project-v3 .pv3-main .rf-copilot.fc-agent{left:0!important;top:0!important;bottom:0!important;width:var(--pv3-agent-width)!important;max-width:none;height:auto!important;border-radius:0;border-width:0 1px 0 0;border-color:#e5dfed;box-shadow:none;z-index:12}
+.project-v3 .fc-agent .rf-copilot-heading>.icon-btn,.project-v3 .fc-agent .rf-reopen-chat{display:none!important}
+.project-v3 .pv3-main .fc-toolbar,.project-v3 .pv3-main .fc-minimap{display:none}
+.pv3-topbar{position:absolute;left:calc(var(--pv3-agent-width) + 12px);right:16px;top:10px;z-index:11;display:flex;align-items:center;min-height:54px;padding:3px 5px 3px 8px;border:1px solid transparent;border-radius:13px;background:transparent;box-shadow:none;transition:background-color .18s ease-out,border-color .18s ease-out,box-shadow .18s ease-out,backdrop-filter .18s ease-out}
+.pv3-topbar:hover,.pv3-topbar:focus-within{border-color:#ded2f0a6;background:rgba(250,247,255,.72);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);box-shadow:0 7px 20px #4827790c}
+.pv3-workspace-switch{flex:none;display:flex;align-items:center;margin-right:7px;padding-right:9px;border-right:1px solid #ddd1ed}
+.pv3-overview-slot{flex:1 1 auto;min-width:0}
+.pv3-navigation{position:relative;flex:none;display:flex;align-items:center;margin-left:6px;padding-left:9px;border-left:1px solid #ddd1ed}
+.pv3-topbar .workspace-view-label{position:absolute;top:calc(100% + 8px);left:50%;display:block;min-width:44px;padding:5px 7px;border:1px solid #d9c8f4;border-radius:6px;background:#fff;color:#513578;box-shadow:0 6px 16px #4c31701f;font-size:11px;line-height:1.2;text-align:center;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%);transition:opacity .14s ease-out,visibility .14s ease-out}
+.pv3-topbar .workspace-view-button:hover .workspace-view-label,.pv3-topbar .workspace-view-button:focus-visible .workspace-view-label{opacity:1;visibility:visible}
+.project-v3 .pv3-main[aria-busy=true] .pv3-navigation{pointer-events:none}
+.pv3-open-workbench{position:absolute;right:108px;bottom:65px;z-index:9;min-height:30px;font-size:11px;padding:5px 9px;border-color:#e8def1;background:#faf8fded;color:#7f5ba6}
+.project-v3 .pv3-main .fc-bottom{left:calc(var(--pv3-agent-width) + 15px)!important;bottom:16px;max-width:calc(100% - var(--pv3-agent-width) - 250px);width:auto;z-index:8}
+.project-v3 .fc-bottom>p{display:none}.project-v3 .fc-zoom-controls{width:auto;gap:0;padding:5px 6px;border-radius:9px;background:#ffffffed}
+.project-v3 .fc-zoom-controls button{font-size:10px;padding-inline:6px}
+.project-v3 .fc-commandbar{left:auto!important;right:16px;bottom:16px;z-index:8}
+.pv3-main[data-hierarchy-level=stages] .fc-command-add,.pv3-main[data-hierarchy-level=internal] .fc-command-add,.pv3-main[data-hierarchy-level=stages] [data-rf-editor=undo],.pv3-main[data-hierarchy-level=stages] [data-rf-editor=redo]{display:none}
+.pv3-main .fc-node.pv3-phase-card{min-height:116px;background:#fff;border-color:#ddd3eb}
+.pv3-main .fc-node.pv3-stage-card{min-height:146px;background:#fff}
+.pv3-main .fc-node.pv3-phase-card>strong{font-size:17px;font-weight:600;color:#514160}
+.pv3-node-description{font-size:12px;color:#a18dab;line-height:1.6}
+.pv3-title-copy{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-width:0}
+.pv3-main[data-hierarchy-level=internal] .fc-node{min-height:132px}
+.pv3-main[data-hierarchy-level=internal] .fc-node .rf-task-scope{display:none}
+.pv3-main[data-hierarchy-level=internal] .pv3-title-copy{font-size:14px;line-height:1.7}
+.pv3-main[data-hierarchy-level=internal] .fc-node.pv3-file-card{box-sizing:border-box;width:220px;min-height:64px;height:auto;display:flex;align-items:center;gap:10px;padding:10px 12px;border-style:solid;border-color:#ddd5ea;background:#fff;box-shadow:0 3px 10px #4c31700a}
+.pv3-main[data-hierarchy-level=internal] .pv3-file-icon{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:7px;background:#f1ecfb;color:#7047c5}
+.pv3-main[data-hierarchy-level=internal] .pv3-file-icon svg{width:16px;height:16px}
+.pv3-main[data-hierarchy-level=internal] .pv3-file-copy{display:grid;gap:2px;min-width:0}
+.pv3-main[data-hierarchy-level=internal] .pv3-file-card .pv3-title-copy{display:block;overflow:hidden;font-size:12px;font-weight:600;line-height:1.45;text-overflow:ellipsis;white-space:nowrap}
+.pv3-main[data-hierarchy-level=internal] .pv3-file-copy small{font-size:10px;line-height:1.4;color:#9a88aa}
+.pv3-main[data-hierarchy-level=internal] .pv3-file-card .rf-task-output{display:none}
+.pv3-main .fc-node.pv3-stage-card .rf-task-scope{font-size:11px;line-height:1.7;color:#a18eaf;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pv3-main[data-hierarchy-level] .fc-node.rf-task-node.pv3-gate-card{box-sizing:border-box;width:112px;min-width:112px;min-height:48px;height:48px;display:grid;place-items:center;padding:0 14px;border:1.5px solid #9073db;border-radius:999px;background:#eee8fb;box-shadow:0 2px 7px #50318b0d;cursor:grab}
+.pv3-main .fc-viewport.is-panning .fc-node.pv3-gate-card{cursor:grabbing}
+.pv3-main .pv3-gate-card .rf-task-node-top,.pv3-main .pv3-gate-card .fc-drag-handle,.pv3-main .pv3-gate-card .rf-task-output{display:none}
+.pv3-main .pv3-gate-card>strong{display:block;min-height:0;font-size:18px;font-weight:600;line-height:1;color:#5939a0;text-align:center}
+.pv3-main .fc-node.pv3-gate-card:hover{background:#e7ddfb;border-color:#754de0}
+.pv3-main .fc-node.pv3-gate-card.fc-multi-selected{background:#e5d9ff;border-color:#6840d7;box-shadow:0 0 0 3px #734ce52a}
+.pv3-stage-caption{position:absolute;left:calc(var(--pv3-agent-width) + 24px);bottom:73px;max-width:calc(100% - var(--pv3-agent-width) - 48px);font-size:10px;color:#9f8aaf;pointer-events:none}
+.pv3-boundary{position:absolute;top:var(--pv3-top-clearance,112px);bottom:80px;width:56px;border:1px solid #e6deee;border-radius:9px;background:#faf8fdeb;z-index:8;display:flex;flex-direction:column;overflow:visible}
+.pv3-input{left:calc(var(--pv3-agent-width) + 12px);border-left:2px solid #c8b5ec}
+.pv3-output{right:12px;border-right:2px solid #c8b5ec}
+.pv3-boundary-heading{position:relative;display:grid;place-items:center;width:100%;min-height:50px;padding:6px;border-bottom:1px solid #eee7f4;flex-shrink:0;text-align:center}
+.pv3-boundary-nav-icon{display:grid;place-items:center;width:28px;height:28px;border:1px solid #dfd2ef;border-radius:50%;background:#f3edfc;color:#7147c5;transition:background .15s,color .15s,transform .15s}
+.pv3-boundary-nav-icon svg{display:block;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pv3-boundary-tooltip{position:absolute;top:9px;z-index:2;width:max-content;max-width:230px;padding:7px 10px;border:1px solid #d9c8f4;border-radius:7px;background:#fff;color:#55377d;box-shadow:0 7px 20px #4c317024;font-size:11px;line-height:1.5;white-space:normal;text-align:left;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .14s}
+.pv3-input .pv3-boundary-tooltip{left:calc(100% + 10px)}
+.pv3-output .pv3-boundary-tooltip{right:calc(100% + 10px)}
+.pv3-boundary-heading:hover .pv3-boundary-tooltip,.pv3-boundary-heading:focus-visible .pv3-boundary-tooltip{opacity:1;visibility:visible}
+.pv3-boundary-files{display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 3px;overflow:auto;min-height:0;scrollbar-width:thin}
+.pv3-boundary-files>button{display:grid;place-items:center;width:32px;min-height:32px;flex-shrink:0;border:1px solid transparent;border-radius:7px;color:#9572c1;background:#f2ecfb}
+.pv3-boundary-files>button:hover,.pv3-boundary-files>button:focus-visible{color:#5f36fc;border-color:#c9b7f7;background:#eae1fc;outline:none}
+.pv3-boundary-files>button svg{width:17px;height:17px}
+.pv3-boundary-files>button.pv3-expected-file{background:transparent;border:1px dashed #d9ccea;color:#b39bc9}
+.pv3-empty-files{font-size:15px;color:#c6b8d2;padding:9px 0}
+@media(max-width:1200px){.project-v3 .pv3-main{--pv3-agent-width:280px!important}.pv3-scene-count{display:none}.project-v3 .fc-zoom-controls [data-fc-layout]{display:none}}
+@media(max-width:800px){.project-v3 .pv3-main{--pv3-agent-width:240px!important}.pv3-topbar{left:calc(var(--pv3-agent-width) + 8px);right:8px}.pv3-navigation{margin-left:3px;padding-left:5px}.pv3-workspace-switch{margin-right:4px;padding-right:5px}.pv3-workspace-state-switch button,.pv3-view-tabs>button{width:30px;height:34px}.pv3-workspace-state-switch button svg,.pv3-view-tabs>button svg{width:16px;height:16px}.pv3-boundary{width:52px}.pv3-open-workbench{display:none}.pv3-context-path{font-size:10px}.project-v3 .fc-zoom-controls [data-fc-current]{display:none}.project-v3 .fc-commandbar>button{width:27px;height:29px}.project-v3 .fc-bottom{max-width:calc(100% - var(--pv3-agent-width) - 175px)}}
+@media(prefers-reduced-motion:reduce){.pv3-boundary{transition:none}}
+
+@media(prefers-reduced-motion:reduce){.pv3-view-tabs>button{transition:none}}
+
+/* Parent-level workflow dock: a quiet map that expands around the pointer. */
+.pv3-overview-dock{position:relative;min-height:45px;padding:2px 10px 0;z-index:1;overflow:visible;white-space:nowrap}
+.pv3-overview-track{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:center;gap:22px;min-height:45px}
+.pv3-overview-group{position:relative;display:flex;flex:0 0 auto;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.pv3-overview-group+.pv3-overview-group:before{content:'';position:absolute;left:-9px;top:19px;width:1px;height:18px;background:#d9ceea}
+.pv3-overview-group-name{font-size:10px;font-weight:600;letter-spacing:.08em;color:#9b85b2;line-height:1.4;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pv3-overview-row{display:flex;align-items:center;justify-content:center;gap:13px;min-height:28px}
+.pv3-overview-column{display:flex;flex-direction:column;align-items:center;gap:3px}
+.pv3-overview-node{position:relative;display:grid;place-items:center;flex:none;width:27px;height:27px;padding:0;border:0;background:transparent;cursor:pointer;overflow:visible;z-index:1}
+.pv3-overview-node.pv3-overview-hot,.pv3-overview-node:focus-visible{z-index:5}
+.pv3-overview-disc{position:relative;display:grid;place-items:center;width:22px;height:22px;border:1px solid #d9cdef;border-radius:50%;background:#fff;color:#8f70b0;box-shadow:0 1px 5px #6041800d;transform:translateY(var(--dock-lift,0px)) scale(var(--dock-scale,1));transition:transform .16s cubic-bezier(.22,1,.36,1),background .16s,border-color .16s,box-shadow .16s}
+.pv3-overview-disc svg{width:12px;height:12px}
+.pv3-overview-disc i{position:absolute;right:-2px;bottom:-1px;width:5px;height:5px;border:1px solid #fff;border-radius:50%;background:#b6a4c9}
+.pv3-overview-node[data-status="已完成"] .pv3-overview-disc i{background:#32ae88}
+.pv3-overview-node[data-status="进行中"] .pv3-overview-disc i{background:#5f36fc}
+.pv3-overview-node[aria-current=step] .pv3-overview-disc{border-color:#5f36fc;background:#5f36fc;color:#fff;box-shadow:0 0 0 3px #ede7ff}
+.pv3-overview-node.pv3-overview-selected .pv3-overview-disc{border-color:#5f36fc;background:#5f36fc;color:#fff;box-shadow:0 0 0 4px #ded3ff,0 0 0 6px #ffffffb8}
+.pv3-main[data-hierarchy-level=stages] .fc-node.fc-multi-selected{border-color:#653bf1;background:#f4efff;box-shadow:0 0 0 var(--pv3-selection-ring,4px) #7547f3a8,0 8px 22px #5835b030}
+.pv3-overview-node.pv3-overview-hot .pv3-overview-disc,.pv3-overview-node:focus-visible .pv3-overview-disc{border-color:#7c54f9;box-shadow:0 0 0 4px #e9dfff,0 7px 15px #5f36fc30}
+.pv3-overview-node:focus-visible{outline:none}
+.pv3-overview-label{position:absolute;top:calc(100% + 9px);left:0;display:flex;flex-direction:column;gap:1px;max-width:210px;padding:6px 9px;border:1px solid #d8c8fa;border-radius:7px;background:#fff;color:#3d2b54;box-shadow:0 8px 22px #40306023;opacity:0;visibility:hidden;pointer-events:none;text-align:left;line-height:1.3;white-space:normal;transition:opacity .12s}
+.pv3-overview-label strong{font-size:11px;font-weight:600;overflow-wrap:anywhere}
+.pv3-overview-label small{font-size:10px;color:#8b71a3}
+.pv3-overview-node.pv3-overview-hot .pv3-overview-label,.pv3-overview-node:focus-visible .pv3-overview-label{opacity:1;visibility:visible}
+.pv3-overview-wires{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.pv3-overview-wires path{fill:none;stroke:#d2c2e7;stroke-width:1.2}
+.pv3-overview-packages .pv3-overview-track{justify-content:center}
+.pv3-overview-packages .pv3-overview-row{justify-content:center;gap:22px}
+.pv3-overview-packages .pv3-overview-column{flex:none}
+.pv3-overview-packages .pv3-overview-group-name{max-width:300px;font-size:9px;letter-spacing:0;font-weight:500}
+.pv3-overview-neighbor .pv3-overview-track{gap:25px}
+.pv3-overview-neighbor .pv3-overview-row{gap:9px}
+.pv3-overview-neighbor .pv3-overview-group{gap:2px}
+.pv3-overview-neighbor .pv3-overview-group+.pv3-overview-group:before{content:'|';left:-16px;top:calc(50% + 7px);transform:translateY(-50%);width:auto;height:auto;background:none;color:#b6a4cc;font-size:17px;font-weight:300;line-height:1}
+.pv3-overview-neighbor .pv3-overview-group[data-context=adjacent] .pv3-overview-disc{opacity:.62}
+.pv3-overview-neighbor .pv3-overview-group[data-context=adjacent] .pv3-overview-group-name{color:#907da5}
+.pv3-overview-neighbor .pv3-overview-group[data-context=current] .pv3-overview-group-name{color:#5f36c9;font-size:10px;font-weight:700}
+.pv3-overview-neighbor .pv3-overview-group[data-context=adjacent]:hover .pv3-overview-disc,.pv3-overview-neighbor .pv3-overview-group[data-context=adjacent]:focus-within .pv3-overview-disc{opacity:1}
+.pv3-overview-neighbor .pv3-overview-column{gap:5px}
+.pv3-overview-slot{position:relative}
+.pv3-overview-slot::before,.pv3-overview-slot::after{content:'‹';position:absolute;top:4px;bottom:3px;z-index:4;display:grid;place-items:center;width:25px;color:#8d73b3;font-size:19px;line-height:1;pointer-events:none;opacity:0;transition:opacity .16s}
+.pv3-overview-slot::before{left:0;background:linear-gradient(90deg,#faf8fbea 40%,#faf8fb00)}
+.pv3-overview-slot::after{content:'›';right:0;background:linear-gradient(270deg,#faf8fbea 40%,#faf8fb00)}
+.pv3-overview-slot.pv3-overview-has-before::before,.pv3-overview-slot.pv3-overview-has-after::after{opacity:.72}
+.pv3-overview-full-chain{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain}
+.pv3-overview-full-chain .pv3-overview-group-name{cursor:grab;touch-action:none;user-select:none}
+.pv3-overview-full-chain .pv3-overview-group-name.is-dragging{cursor:grabbing;color:#5f36fc}
+.pv3-overview-node.pv3-overview-picking .pv3-overview-disc{border-color:#5f36fc;box-shadow:0 0 0 5px #dcd0ff,0 0 0 10px #e8dfff80;transform:translateY(-3px) scale(1.3)}
+.pv3-overview-full-chain::-webkit-scrollbar{display:none}
+.pv3-overview-full-chain .pv3-overview-track{width:max-content;min-width:100%;justify-content:flex-start;align-items:stretch}
+.pv3-overview-full-chain .pv3-overview-group{justify-content:flex-start}
+.pv3-overview-full-chain .pv3-overview-row{flex:1;align-items:center}
+.pv3-overview-full-chain .pv3-overview-label{display:none}
+.pv3-overview-floating-label{position:absolute;z-index:13;min-width:120px;max-width:210px;padding:6px 9px;border:1px solid #d8c8fa;border-radius:7px;background:#fff;color:#3d2b54;box-shadow:0 8px 22px #40306023;pointer-events:none;line-height:1.3;white-space:normal}
+.pv3-overview-floating-label[hidden]{display:none}
+.pv3-overview-floating-label strong{display:block;font-size:11px;font-weight:600;overflow-wrap:anywhere}
+.pv3-overview-floating-label small{display:block;margin-top:2px;font-size:10px;color:#8b71a3}
+@media(max-width:1200px){.pv3-overview-track{gap:14px}.pv3-overview-row{gap:7px}.pv3-overview-packages .pv3-overview-row{gap:12px}.pv3-overview-node{width:24px;height:26px}}
+@media(max-width:800px){.pv3-overview-dock{padding-inline:2px}.pv3-overview-group-name{font-size:8px}.pv3-overview-track{gap:5px}.pv3-overview-row{gap:2px}.pv3-overview-packages .pv3-overview-row{gap:5px}.pv3-overview-node{width:20px;height:24px}.pv3-overview-disc{width:17px;height:17px}.pv3-overview-disc svg{width:9px;height:9px}}
+@media(prefers-reduced-motion:reduce){.pv3-overview-disc,.pv3-overview-label{transition:none}}
+
+/* Global phase cues follow their first node without boxing in the free canvas. */
+.pv3-phase-groups{position:absolute;left:0;top:0;pointer-events:none}
+.pv3-phase-cue{position:absolute;display:flex;align-items:center;gap:9px;min-width:180px;height:24px;color:#77658a;white-space:nowrap}
+.pv3-phase-cue::before{content:"";position:absolute;left:0;top:-11px;width:34px;height:2px;border-radius:2px;background:#d9cbea}
+.pv3-phase-cue>strong{font-size:19px;font-weight:600;line-height:1;color:inherit}
+.pv3-phase-cue-count{font-size:13px;color:#9d8cad}
+.pv3-phase-cue-dot{width:9px;height:9px;border-radius:50%;background:#b9afc8;box-shadow:0 0 0 4px #ede8f4}
+.pv3-phase-cue-dot[data-status="已完成"]{background:#3d9c83;box-shadow:0 0 0 4px #e7f4ef}
+.pv3-phase-cue-dot[data-status="进行中"]{background:#6740f5;box-shadow:0 0 0 4px #ece6ff}
+.pv3-phase-cue[data-phase-group=research]{color:#5931d1}
+.pv3-phase-cue[data-phase-group^=research]{color:#5931d1}
+.pv3-round-toggle,.pv3-overview-round-toggle{border:1px solid #ded3f5;background:#faf8ff;color:#6740d8;border-radius:6px;cursor:pointer;font:inherit}
+.pv3-round-toggle{padding:3px 8px;font-size:12px;line-height:1.2;pointer-events:auto}
+.pv3-round-toggle:hover,.pv3-overview-round-toggle:hover{background:#eee7ff;border-color:#a78af4}
+.pv3-overview-group-heading{display:flex;align-items:center;justify-content:center;gap:5px;min-height:16px}
+.pv3-overview-round-toggle{display:inline-flex;align-items:center;justify-content:center;flex:0 0 17px;width:17px;height:17px;padding:0;line-height:1}
+.pv3-overview-round-toggle>span{position:relative;display:block;width:8px;height:8px}
+.pv3-overview-round-toggle>span::before,.pv3-overview-round-toggle>span::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:1px;border-radius:1px;background:currentColor;transform:translate(-50%,-50%)}
+.pv3-overview-round-toggle[data-collapsed=true]>span::after{transform:translate(-50%,-50%) rotate(90deg)}
+.pv3-round-card{border-color:#b9a5ef;background:#faf8ff}
+.pv3-round-card .pv3-node-description{color:#7353bf}
+.pv3-main[data-hierarchy-level=stages] .fc-world>.fc-edges,.pv3-main[data-hierarchy-level=stages] .fc-world>.fc-nodes{isolation:isolate}
+
+button.pv3-boundary-heading{cursor:pointer;transition:background .15s}
+button.pv3-boundary-heading:not(:disabled):hover,button.pv3-boundary-heading:focus-visible{background:transparent;outline:none}
+button.pv3-boundary-heading:focus-visible .pv3-boundary-nav-icon{outline:2px solid #baa1f1;outline-offset:2px}
+button.pv3-boundary-heading:not(:disabled):hover .pv3-boundary-nav-icon,button.pv3-boundary-heading:focus-visible .pv3-boundary-nav-icon{background:#5f36fc;color:#fff;border-color:#5f36fc;transform:scale(1.08)}
+button.pv3-boundary-heading:disabled{cursor:default}
+button.pv3-boundary-heading:disabled .pv3-boundary-nav-icon{color:#b9aec8;border-color:#e8e1ee;background:#f7f4fa}
+
+.pv3-main[data-hierarchy-level=stages] .fc-node.pv3-stage-card{width:180px;min-height:126px}
+.pv3-main[data-hierarchy-level=stages] .fc-node.pv3-stage-card .rf-task-scope{display:none}
+.pv3-main .fc-create-separator{height:1px;margin:7px 8px;background:#e6ddf5}
+.pv3-main .fc-create-note{margin:7px 12px 4px;color:#827b96;font-size:11px;line-height:1.5}
+.pv3-boundary.is-gate-selected{border-color:#8c69eb;background:#f5efff;box-shadow:0 0 0 2px #a68af344}
+.pv3-boundary.is-gate-selected .pv3-boundary-files>button{border-color:#af93f3;background:#e7dfff;color:#5f36fc}
+.pv3-rail-drag-preview{position:fixed;inset:0;width:100vw;height:100vh;z-index:9999;pointer-events:none;overflow:visible}
+.pv3-rail-drag-preview path{fill:none;stroke:#673bff;stroke-width:2;stroke-dasharray:7 5}
