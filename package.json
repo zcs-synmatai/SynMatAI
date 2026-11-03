@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
     "build": "node scripts/build.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
     "check": "node scripts/check.mjs",
     "test": "node --test scripts/dev-server.test.mjs",
     "test:workspace": "node --test scripts/project-workspace-smoke.test.mjs"
