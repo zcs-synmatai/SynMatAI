@@ -65,6 +65,19 @@ test('workspace scripts load before their consumers and expose only two primary 
  assert.match(research,/class="research-agent-name"/);assert.match(research,/class="research-task-name"/);
 });
 
+test('only the protected example project receives a replayable page tour',async()=>{
+ const html=await source('index.html'),tour=await source('src/features/demo-guide/page-tour.js'),guide=await source('src/features/demo-guide/demo-guide.js'),css=await source('src/styles/page-tour.css');
+ assert.match(html,/features\/demo-guide\/page-tour\.js/);assert(html.indexOf('demo-guide.js')<html.indexOf('page-tour.js'));
+ assert.match(tour,/synmat-page-tour-v1:/);assert.match(tour,/item\.protected===true/);assert.doesNotMatch(tour,/item\.scenario==='guided-demo'\|\|item\.protected/);assert.match(tour,/const shownProjects=new Set\(\)/);assert.match(tour,/shownProjects\.has\(key\)/);assert.doesNotMatch(tour,/localStorage\.getItem\(storageKey\(\)\)===['"]done['"]/);assert.doesNotMatch(tour,/localStorage\.setItem\(storageKey\(\),['"]done['"]\)/);assert.match(tour,/synmat:project-registry-updated/);assert.match(tour,/data-tour-back/);assert.match(tour,/data-tour-next/);assert.match(tour,/event\.key==='Escape'/);assert.match(tour,/event\.key==='ArrowRight'/);
+ assert.match(tour,/最左侧是主菜单栏/);assert.match(tour,/conversationToggle/);assert.match(tour,/切换项目内对话列表/);assert.match(tour,/Agent对话栏，不同任务会有不同类型的Agent接受任务，完成工作/);assert.match(tour,/工作预览区，展示任务或者预览文件/);assert.match(tour,/工作台与项目流程间切换/);assert.match(guide,/data-guide-tour/);assert.match(guide,/activeProject\?\.protected!==true/);assert.match(guide,/synmat:start-page-tour/);
+ for(const id of ['tabs','flow-topbar','flow-levels','flow-canvas','flow-input','flow-output','flow-double-click','agent-palette'])assert.match(tour,new RegExp(`id:'${id}'`));
+ assert.match(tour,/ensureWorkspace\('flow','stages'\)/);assert.match(tour,/ensureWorkspace\('flow','packages'\)/);assert.match(tour,/ensureWorkspace\('flow','internal'\)/);
+ assert.match(tour,/level==='internal'.*dataset\.hierarchyLevel==='packages'/);assert.match(tour,/!\/计算模拟\/\.test/);
+ assert.match(tour,/阶段导航，单击节点进入，双击向上返回/);assert.match(tour,/项目流程画布，自由管理流程，安排Agent或人工完成的任务/);assert.match(tour,/双击节点进入下一层/);assert.match(tour,/把Agent拖到画布上，创建Agent任务/);assert.match(tour,/演示说明，正式系统会优化为新手引导/);
+ assert(tour.indexOf("id:'flow-topbar'")<tour.indexOf("id:'flow-levels'"));assert(tour.indexOf("id:'flow-levels'")<tour.indexOf("id:'flow-canvas'"));assert(tour.indexOf("id:'flow-canvas'")<tour.indexOf("id:'flow-input'"));assert(tour.indexOf("id:'flow-input'")<tour.indexOf("id:'flow-double-click'"));assert(tour.indexOf("id:'flow-double-click'")<tour.indexOf("id:'flow-output'"));assert(tour.indexOf("id:'flow-output'")<tour.indexOf("id:'agent-palette'"));
+ assert.match(css,/\.page-tour__mask/);assert.match(css,/\.page-tour__spotlight/);assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+});
+
 test('workspace controller switches routes, synchronizes breadcrumbs and persists wide chat widths',async()=>{
  const runtime=workspaceRuntime();
  vm.runInContext(await source('src/features/workflow/project-workspace-components.js'),runtime.context);
