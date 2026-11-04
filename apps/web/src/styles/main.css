@@ -9,8 +9,6 @@
 @import url("./research.css");
 @import url("./research-flow.css");
 
-@import url("./project-overview.css");
-
 @import url("./project-assets.css");
 @import url("./experiments.css");
 
@@ -32,4 +30,5 @@
 
 @import url("./workbench-navigation.css");
 @import url("./projects.css");
+@import url("./project-overview.css");
 @import url("./workspace-shell.css");

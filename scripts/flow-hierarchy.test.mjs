@@ -4,23 +4,25 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 const load=path=>readFile(new URL('../apps/web/src/features/'+path,import.meta.url),'utf8');
 const task=await load('workflow/task-canvas-model.js');
+const numbering=await load('workflow/numbering-model.js');
 const hierarchy=await load('research-flow/hierarchy-model.js');
 const draft=await load('research-flow/draft-model.js');
-const M=vm.runInNewContext(task+'\n'+draft+'\n'+hierarchy+';FlowHierarchyModel',{structuredClone});
+const context={structuredClone,window:{}};vm.runInNewContext(numbering,context);context.WorkflowNumbering=context.window.WorkflowNumbering;
+const M=vm.runInNewContext(task+'\n'+draft+'\n'+hierarchy+';FlowHierarchyModel',context);
 const stage=(id)=>({id,title:id,deliverables:'D1 输入记录；D2 决策文件'});
-const views=Object.fromEntries([['市场分析',['M1']],['项目立项',['P1']],['研发',['S1','S2','S3','S4','S5','S6']],['量产',['L1','L2','L3']]].map(([p,ids])=>[p,{stages:ids.map(stage),tasks:ids.map(id=>({id:id+'T1',name:'任务',stage:id}))}]));
+const views=Object.fromEntries([['项目立项',['P1']],['研发',['S1','S2','S3','S4','S5','S6']],['量产',['L1','L2','L3']]].map(([p,ids])=>[p,{stages:ids.map(stage),tasks:ids.map(id=>({id:id+'T1',name:'任务',stage:id}))}]));
 const plain=value=>JSON.parse(JSON.stringify(value));
 test('global view starts with one research stage and can collapse it without inventing a second stage',()=>{
- const before=JSON.stringify(views),scene=M.stages(views,'研发',(p,s)=>s==='S2'?'进行中':p==='市场分析'||p==='项目立项'||s==='S1'?'已完成':'待开始');
- assert.equal(scene.nodes.length,11);assert.deepEqual(plain(scene.groups.map(g=>[g.name,g.ids.length,g.status])),[['立项',2,'已完成'],['研发',6,'进行中'],['量产',3,'待开始']]);
- assert.equal(scene.nodes.find(n=>n.id==='S2').status,'进行中');assert.equal(scene.edges.length,10);
- assert.ok(scene.edges.some(e=>e[0]==='PH2'&&e[1]==='S1'));assert.ok(scene.edges.some(e=>e[0]==='S6'&&e[1]==='L1'));assert.equal(scene.nodes.some(n=>n.id==='RD2'),false);
+ const before=JSON.stringify(views),scene=M.stages(views,'研发',(p,s)=>s==='S2'?'进行中':p==='项目立项'||s==='S1'?'已完成':'待开始');
+ assert.equal(scene.nodes.length,10);assert.deepEqual(plain(scene.groups.map(g=>[g.name,g.ids.length,g.status])),[['立项',1,'已完成'],['研发',6,'进行中'],['量产',3,'待开始']]);
+ assert.equal(scene.nodes.find(n=>n.id==='S2').status,'进行中');assert.equal(scene.edges.length,9);
+ assert.ok(scene.edges.some(e=>e[0]==='PH1'&&e[1]==='S1'));assert.ok(scene.edges.some(e=>e[0]==='S6'&&e[1]==='L1'));assert.equal(scene.nodes.some(n=>n.id==='RD2'),false);
  assert.equal(scene.nodes.find(n=>n.id==='S6').feedback,true);assert.match(scene.nodes.find(n=>n.id==='S6').name,/用户反馈/);
  assert.equal(scene.nodes.filter(n=>n.viewKind==='phase').length,0);
  const folded=M.stages(views,'研发',(p,s)=>s==='S1'?'已完成':'待开始',['research-1']);
- assert.equal(folded.nodes.length,6);assert.ok(folded.edges.some(e=>e[0]==='PH2'&&e[1]==='RD1'));assert.ok(folded.edges.some(e=>e[0]==='RD1'&&e[1]==='L1'));
+ assert.equal(folded.nodes.length,5);assert.ok(folded.edges.some(e=>e[0]==='PH1'&&e[1]==='RD1'));assert.ok(folded.edges.some(e=>e[0]==='RD1'&&e[1]==='L1'));
  assert.equal(folded.groups[1].collapsed,true);assert.equal(folded.nodes.find(n=>n.id==='RD1').count,6);
- assert.equal(JSON.stringify(views),before);assert.equal(M.stages(views,'市场分析',()=> '已完成').nodes.length,11);
+ assert.equal(JSON.stringify(views),before);assert.equal(M.stages(views,'项目立项',()=> '已完成').nodes.length,10);
  for(const n of scene.nodes.filter(n=>!n.pending))assert.ok(views[n.phase].stages.some(s=>s.id===n.stageId));
 });
 test('empty research and production keep phase titles separate from planning placeholders',()=>{
@@ -33,7 +35,7 @@ test('empty research and production keep phase titles separate from planning pla
 test('boundary rails follow neighboring substages and cross major phase boundaries',()=>{
  assert.equal(M.adjacent(views,'研发','S2').before.id,'S1');assert.equal(M.adjacent(views,'研发','S2').after.id,'S3');
  assert.equal(M.adjacent(views,'研发','S1').before.phase,'项目立项');assert.equal(M.adjacent(views,'研发','S6').after.id,'L1');
- assert.equal(M.adjacent(views,'市场分析','M1').before,null);assert.equal(M.adjacent(views,'量产','L3').after,null);
+ assert.equal(M.adjacent(views,'项目立项','P1').before,null);assert.equal(M.adjacent(views,'量产','L3').after,null);
  assert.deepEqual(plain(M.requirements(stage('S1'))),['输入记录','决策文件']);
 });
 test('task view can continue from the first or last work package into a neighboring stage',()=>{
@@ -41,7 +43,7 @@ test('task view can continue from the first or last work package into a neighbor
  local['项目立项'].tasks.push({id:'P1T2',name:'方案审批',stage:'P1'});
  assert.deepEqual(plain(M.boundaryPackage(local,'研发','S1','before')),{id:'P1T2',name:'方案审批',stage:'P1',phase:'项目立项',stageId:'P1'});
  assert.equal(M.boundaryPackage(local,'研发','S1','after').id,'S2T1');
- assert.equal(M.boundaryPackage(local,'市场分析','M1','before'),null);
+ assert.equal(M.boundaryPackage(local,'项目立项','P1','before'),null);
  assert.equal(M.boundaryPackage(local,'量产','L3','after'),null);
 });
 test('internal view reads the exact existing workspace keys',()=>{
@@ -65,6 +67,13 @@ test('internal projection places one referenced file before its consuming tasks 
  assert.equal(scene.edges.some(edge=>edge[0]===scene.inputId&&['A','B'].includes(edge[1])),false);
  assert.ok(scene.edges.some(edge=>edge[0]==='A'&&edge[1]===scene.outputId));assert.ok(scene.edges.some(edge=>edge[0]==='B'&&edge[1]===scene.outputId));
 });
+test('active package starts every ready root task even when a shared input file sits before them',()=>{
+ const cached={todos:[{id:'A',text:'核对原料',status:'todo'},{id:'B',text:'确认设备',status:'todo'}],docs:{'任务资料.md':'输入'},taskCanvas:{edges:[],artifacts:[],hidden:[],inputNames:null}};
+ cached.todos.forEach(todo=>{todo.inputs=['任务资料.md']});
+ const before=JSON.stringify(cached),scene=M.internal({id:'T11',name:'实施条件验证'},{phase:'研发',stage:'S1',cached,packageStatus:'进行中'});
+ assert.equal(scene.nodes.find(node=>node.id==='A').status,'进行中');assert.equal(scene.nodes.find(node=>node.id==='B').status,'进行中');
+ assert.equal(JSON.stringify(cached),before);
+});
 test('independent internal tasks share one lightweight package brief before joining at output',()=>{
  const cached={todos:[{id:'A',text:'准备'},{id:'B',text:'核对'}],taskCanvas:{edges:[]}};
  const scene=M.internal({id:'T1',name:'制板'},{cached}),file=scene.nodes.find(n=>n.name==='制板—任务资料.md');assert.equal(scene.example,false);assert.equal(scene.nodes.length,5);
@@ -84,20 +93,20 @@ test('stage wrapper retains real dependency and connects every independent branc
  assert.deepEqual(plain(scene.edges.slice(1).map(e=>e.slice(0,2))),[[scene.inputId,'A'],[scene.inputId,'B'],['B',scene.outputId],['C',scene.outputId]]);
  assert.equal(items[0].virtual,undefined);assert.equal(edges.length,1);
 });
-test('one integrated project graph connects all eleven stages and all package tasks',()=>{
+test('one integrated project graph starts at initiation and connects all ten stages and package tasks',()=>{
  const graph=M.integrate(views,{internalFor:(phase,stage,item)=>M.enclose([{id:'task1',name:'准备'},{id:'task2',name:'核对'}],[],'task/'+phase+'/'+stage+'/'+item.id,'工作包')});
- assert.equal(graph.stages.length,11);assert.equal(graph.packages.length,11);assert.equal(graph.phaseGroups.length,4);
+ assert.equal(graph.stages.length,10);assert.equal(graph.packages.length,10);assert.equal(graph.phaseGroups.length,3);
  const adjacency=new Map();for(const [from,to] of graph.edges){if(!adjacency.has(from))adjacency.set(from,[]);adjacency.get(from).push(to)}
  const seen=new Set(),queue=[graph.inputId];while(queue.length){const id=queue.shift();if(seen.has(id))continue;seen.add(id);queue.push(...adjacency.get(id)||[])}
  assert.equal(seen.size,graph.nodes.length);assert.ok(seen.has(graph.outputId));
  for(const item of graph.packages){assert.ok(seen.has(item.inputId));assert.ok(seen.has(item.outputId));}
- assert.ok(graph.edges.some(e=>e[0]===graph.phaseGroups[1].outputId&&e[1]===graph.phaseGroups[2].inputId));
+ assert.ok(graph.edges.some(e=>e[0]===graph.phaseGroups[0].outputId&&e[1]===graph.phaseGroups[1].inputId));
  assert.ok(graph.edges.some(e=>e[0]===graph.stages[2].outputId&&e[1]===graph.stages[3].inputId));
 });
 test('integrated stage carries an attached result file without inventing a work package',()=>{
  const local=structuredClone(views);local.研发.canvasFiles={S2:{files:[{id:'FILE-1',name:'结果.md',fileNode:true}],edges:[['S2T1','FILE-1','结果文件','dependency']]}};
  const graph=M.integrate(local);const asset=graph.nodes.find(n=>n.id==='asset/研发/S2/FILE-1');
- assert.equal(asset.name,'结果.md');assert.equal(graph.packages.length,11);
+ assert.equal(asset.name,'结果.md');assert.equal(graph.packages.length,10);
  const source=graph.packages.find(p=>p.phase==='研发'&&p.stageId==='S2');assert.ok(graph.edges.some(e=>e[0]===source.outputId&&e[1]===asset.id));
  assert.ok(graph.edges.some(e=>e[0]===asset.id&&e[1]===graph.stages.find(s=>s.phase==='研发'&&s.stageId==='S2').outputId));
 });
@@ -106,7 +115,7 @@ test('integrated stage carries an attached result file without inventing a work 
 test('shared package overview preserves project definitions, branch layout and cross-stage identity',()=>{
  const source=structuredClone(views);source.研发.tasks.push({id:'BRANCH',name:'自建工作包',stage:'S2'},{id:'RESULT',name:'文件',stage:'S2',fileNode:true});source.研发.edges={S2:[['S2T1','BRANCH']]};const before=JSON.stringify(source);
  const nav=M.packageOverview(source,'研发','S2','BRANCH',(p,t)=>t.id==='BRANCH'?'进行中':'待开始');
- assert.equal(nav.current,'研发/S2/BRANCH');assert.equal(nav.groups.length,11);assert.equal(nav.groups.filter(g=>g.active).length,1);
+ assert.equal(nav.current,'研发/S2/BRANCH');assert.equal(nav.groups.length,10);assert.equal(nav.groups.filter(g=>g.active).length,1);
  assert.equal(nav.nodes.some(n=>n.packageId==='RESULT'),false);assert.equal(nav.nodes.find(n=>n.packageId==='BRANCH').status,'进行中');
  assert.ok(nav.nodes.some(n=>n.phase==='量产'));assert.ok(nav.edges.some(e=>e[0]==='研发/S2/S2T1'&&e[1]==='研发/S2/BRANCH'));
  const group=nav.groups.find(g=>g.active);assert.equal(group.columns.length,2);assert.equal(JSON.stringify(source),before);

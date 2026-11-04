@@ -53,6 +53,8 @@ body.workspace-conversations-collapsed{--workspace-conversation-width:0px}
  body.task-workspace-active .project-context,body.task-workspace-active .workbench-flow-nav,body.task-workspace-active .task-header{display:none!important}
  body.task-workspace-active:has(.research-desk:not(.hidden)) .workbench{display:none!important}
  body.task-workspace-active .research-desk{--chat-width:var(--workspace-chat-width)!important;position:absolute;inset:0;z-index:2;width:100%;height:100%!important;min-height:0;margin:0;border:0;border-radius:0;grid-template-columns:var(--workspace-conversation-width) var(--workspace-chat-width) var(--workspace-divider) minmax(0,1fr);background:#fff;transition:grid-template-columns .18s ease-out}
+ body.task-workspace-active .research-desk.preview-minimized{grid-template-columns:var(--workspace-conversation-width) minmax(0,1fr) 0 54px}
+ body.task-workspace-active .research-desk.preview-minimized>.research-resizer{display:none}
  body.task-workspace-active .workspace-conversation-rail{grid-column:1;grid-row:1;min-width:0;height:100dvh;display:flex;flex-direction:column;border-right:1px solid #e8e3ed;background:#faf9fc;overflow:hidden;opacity:1;visibility:visible;transition:opacity .14s ease-out,transform .18s ease-out,visibility .18s}
  body.task-workspace-active .workspace-conversation-rail>header{height:50px;flex:0 0 50px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px 0 14px;border-bottom:1px solid #ebe7f0}
  body.task-workspace-active .workspace-conversation-rail>header strong{min-width:0;display:flex;align-items:center;gap:8px;font-size:12px;color:#51465f;white-space:nowrap}
@@ -76,13 +78,17 @@ body.workspace-conversations-collapsed{--workspace-conversation-width:0px}
  body.workspace-conversations-collapsed.task-workspace-active .workspace-conversation-peek.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:none}
  body.task-workspace-active .workspace-conversation-peek>header{flex-basis:46px;height:46px}
  body.task-workspace-active .research-chat{grid-column:2;grid-row:1;order:0;padding-top:0;border-right:0;background:#fff}
- body.task-workspace-active .research-current-agent{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:8px}
+ body.task-workspace-active .research-current-agent{flex:1 1 auto;width:0;min-width:0;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:8px}
  body.task-workspace-active .research-current-agent>svg{grid-row:1/3;width:18px;height:18px;color:#7650df}
- body.task-workspace-active .research-current-agent strong,body.task-workspace-active .research-current-agent small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ body.task-workspace-active .research-current-agent strong{min-width:0;max-width:100%;display:flex;align-items:center;overflow:hidden;white-space:nowrap}
+ body.task-workspace-active .research-agent-name,body.task-workspace-active .research-agent-separator{flex:none}
+ body.task-workspace-active .research-task-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ body.task-workspace-active .research-current-agent small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
  body.task-workspace-active .research-current-agent small{font-size:10px;color:#978da2}
- body.task-workspace-active .research-panel-head{height:54px;padding-inline:12px 16px;background:#fff}
+ body.task-workspace-active .research-panel-head{height:54px;min-width:0;gap:8px;padding-inline:12px 16px;background:#fff}
  body.task-workspace-active .research-panel-head>.workspace-agent-heading,body.task-workspace-active .copilot>.panel-title>.workspace-agent-heading{min-width:0}
- body.task-workspace-active .research-panel-head>.workspace-agent-heading{flex:1}
+ body.task-workspace-active .research-panel-head>.workspace-agent-heading{flex:1 1 auto;width:0;overflow:hidden}
+ body.task-workspace-active #research-reset{flex:0 0 30px;margin-left:auto}
  body.task-workspace-active .workspace-chat-breadcrumb{height:38px;flex:0 0 38px;display:flex;align-items:center;gap:7px;min-width:0;padding:0 16px;border-bottom:1px solid #eeeaf2;background:#fff;color:#5d5269;font-size:11px;font-weight:600}
  body.task-workspace-active .workspace-chat-breadcrumb svg{width:13px;height:13px;flex:none;color:#7958db}
  body.task-workspace-active .workspace-chat-breadcrumb svg:last-child{margin-left:auto;color:#afa5b9}
@@ -94,6 +100,16 @@ body.workspace-conversations-collapsed{--workspace-conversation-width:0px}
  .workspace-column-resizer:focus-visible{outline:2px solid #8f72e8;outline-offset:-2px}
  body.task-workspace-active .workspace-column-resizer{grid-column:3;grid-row:1;z-index:5}
  body.task-workspace-active .research-preview{grid-column:4;grid-row:1;height:100dvh;background:#fff}
+body.task-workspace-active .research-preview-minimized{display:flex;align-items:center;justify-content:flex-start;width:54px;min-width:54px;height:100%;padding-top:10px;border-left:1px solid #e8e3ed;background:#faf9fc;overflow:hidden}
+body.task-workspace-active .research-preview-restore{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid #ded6eb;border-radius:9px;background:#fff;color:#6b47dc;box-shadow:0 5px 16px #3f285114;transition:background-color .16s ease-out,border-color .16s ease-out,color .16s ease-out,transform .16s ease-out}
+body.task-workspace-active .research-preview-restore:hover{border-color:#cfc1ef;background:#f2edff;color:#5f36fc;transform:translateY(-1px)}
+body.task-workspace-active .research-preview-restore:focus-visible{outline:2px solid #8f72e8;outline-offset:2px}
+body.task-workspace-active .research-preview-restore svg,body.task-workspace-active .research-preview-restore img{width:18px;height:18px;pointer-events:none}
+body.task-workspace-active .research-simulation-host{height:100%;min-height:0;overflow:auto;background:#f7f6fb;padding:12px}
+body.task-workspace-active .research-simulation-host>.right-workspace{display:flex;flex-direction:column;width:100%;min-width:0;min-height:100%;gap:12px}
+body.task-workspace-active .research-simulation-host .calculation-workspace-head{display:none}
+body.task-workspace-active .research-simulation-host .flow-panel,body.task-workspace-active .research-simulation-host .detail-panel,body.task-workspace-active .research-simulation-host .bottom-panel{flex:none;margin:0;background:#fff;border:1px solid #e5e0ee;border-radius:10px;box-shadow:none}
+body.task-workspace-active .research-simulation-host .workspace-footer{margin-top:auto}
  body.task-workspace-active .workspace-preview-head{height:54px;flex:0 0 54px;display:flex;align-items:center;gap:10px;padding:0 10px 0 12px;border-bottom:1px solid #e9e5ee;background:#faf9fc;overflow:hidden}
 body.task-workspace-active .workspace-preview-head>.project-workspace-view-switch{margin-right:0;box-shadow:none}
  body.task-workspace-active .research-tabs{flex:1;min-width:0;min-height:0;height:36px;padding:0 2px 0 10px;align-items:center;gap:6px;border:0;border-left:1px solid #e4dfeb;background:transparent;overflow-x:auto;scrollbar-width:none}

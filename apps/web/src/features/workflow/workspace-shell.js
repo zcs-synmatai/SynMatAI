@@ -63,12 +63,12 @@
  document.addEventListener('synmat:workspace-conversations',()=>syncConversationLauncher());
  document.addEventListener('synmat:task-workspace-visible',()=>queueMicrotask(()=>syncConversationLauncher()));
  const projectStore=()=>typeof ProjectStore!=='undefined'?ProjectStore:null;
- const openPrimaryTaskWorkspace=(project=projectStore()?.active?.())=>{let resolved=false;document.dispatchEvent(new CustomEvent('synmat:request-primary-task-workspace',{detail:{phase:project?.currentPhase||'项目立项',nodeId:project?.currentNodeId||'',respond:value=>{resolved=!!value}}}));if(!resolved)document.dispatchEvent(new CustomEvent('synmat:task-workspace-visible'));return resolved};
- const restorePrimaryTaskWorkspace=()=>openPrimaryTaskWorkspace();
+ const openPrimaryTaskWorkspace=(project=projectStore()?.active?.(),{preferInProgress=true}={})=>{let resolved=false;document.dispatchEvent(new CustomEvent('synmat:request-primary-task-workspace',{detail:{phase:project?.currentPhase||'项目立项',nodeId:project?.currentNodeId||'',preferInProgress,respond:value=>{resolved=!!value}}}));return resolved};
+ const restorePrimaryTaskWorkspace=()=>openPrimaryTaskWorkspace(projectStore()?.active?.(),{preferInProgress:false});
  const restoreLegacyWorkspace=()=>{const project=projectStore()?.active?.();if(project?.lastRoute==='#workspace/flow'){controller.activate('flow');document.dispatchEvent(new CustomEvent('synmat:open-project-flow-context',{detail:{phase:project.currentPhase||'项目立项',packageId:project.currentNodeId||null}}));return}controller.activate('task');restorePrimaryTaskWorkspace()};
  const normalizeLegacyTaskRoute=()=>{if(location.hash!=='#task')return false;if(projectStore())queueMicrotask(restoreLegacyWorkspace);else window.addEventListener('DOMContentLoaded',restoreLegacyWorkspace,{once:true});return true};
  window.addEventListener('popstate',normalizeLegacyTaskRoute);
  window.addEventListener('hashchange',normalizeLegacyTaskRoute);
  window.ProjectWorkspaceShell={syncConversationLauncher,setConversationCollapsed,openPrimaryTaskWorkspace};
- if(!normalizeLegacyTaskRoute()&&!location.hash)queueMicrotask(restorePrimaryTaskWorkspace);
+ if(!normalizeLegacyTaskRoute()&&!location.hash)history.replaceState(null,'',location.pathname+location.search+'#projects');
 })();

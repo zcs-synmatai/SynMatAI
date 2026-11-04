@@ -2,7 +2,7 @@
 const TaskCanvasModel=(()=>{
  const uid=p=>p+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
  const seed=()=>({schema:1,edges:[],artifacts:[],hidden:[],inputNames:null});
- const supportsTask=task=>task.name!=='计算模拟'&&!['计算','计算节点'].includes(task.taskType);
+ const supportsTask=()=>true;
  const inputId=name=>'INPUT-'+[...name].reduce((n,c)=>(Math.imul(n,31)+c.codePointAt(0))>>>0,7).toString(36);
  function seedResearch(state,rows,catalog){
   if(state.researchExampleVersion>=2)return false;
@@ -33,6 +33,17 @@ const TaskCanvasModel=(()=>{
   for(const n of nodes.filter(n=>n.canvasKind==='task'))for(const name of n.inputs||[]){const source=nodes.find(x=>x.canvasKind!=='task'&&x.name===name);if(source&&!edges.some(e=>e[0]===source.id&&e[1]===n.id))edges.push([source.id,n.id,'文件输入','dependency'])}
   return {nodes,edges:edges.filter(e=>!(state.removedEdges||[]).some(pair=>pair[0]===e[0]&&pair[1]===e[1])),inputs};
  }
+ function taskPredecessors(scene,rows,id){
+  const taskIds=new Set(rows.map(row=>row.id)),found=new Set(),visited=new Set();
+  const visit=target=>{if(visited.has(target))return;visited.add(target);for(const edge of scene.edges.filter(edge=>edge[1]===target&&edge[3]!=='evidence')){const source=edge[0];if(taskIds.has(source))found.add(source);else visit(source)}};
+  visit(id);return [...found];
+ }
+ function advanceReady(rows,catalog,state,packageActive){
+  if(!packageActive||!rows.length)return false;
+  const scene=project(rows,catalog,state),byId=new Map(rows.map(row=>[row.id,row])),done=row=>!!row&&(row.done||row.status==='done');let changed=false;
+  for(const row of rows){if(done(row)||['doing','progress','blocked'].includes(row.status))continue;const predecessors=taskPredecessors(scene,rows,row.id);if(predecessors.every(id=>done(byId.get(id)))){row.status='doing';row.done=false;changed=true}}
+  return changed;
+ }
  function createConversation(state){state.chatSequence=(state.chatSequence||0)+1;const chat={id:uid('CHAT'),name:'临时对话 '+String(state.chatSequence).padStart(2,'0'),kind:'conversation',type:'对话',inputs:[],outputs:[]};(state.chats||=[]).push(chat);return chat}
  function conversationContext(scene,id,threads={},readFile=()=>null){
   return [...new Set(scene.edges.filter(e=>e[1]===id).map(e=>e[0]))].map(sourceId=>{
@@ -43,7 +54,7 @@ const TaskCanvasModel=(()=>{
   }).filter(Boolean);
  }
  function connect(scene,from,to,fromPort='right',toPort='left'){
-  const a=scene.nodes.find(n=>n.id===from),b=scene.nodes.find(n=>n.id===to);if(!a||!b)throw Error('节点不存在');if(from===to)throw Error('不能连接节点自身');if(b.canvasKind==='input')throw Error('输入文件只读，不能接收节点产出');if(b.canvasKind==='artifact')throw Error('产出文件的来源由生成节点确定，不能手动更换');if(scene.edges.some(e=>e[0]===from&&e[1]===to))throw Error('这条连线已存在');
+  const a=scene.nodes.find(n=>n.id===from),b=scene.nodes.find(n=>n.id===to);if(!a||!b)throw Error('节点不存在');if(from===to)throw Error('不能连接节点自身');if(b.canvasKind==='input')throw Error('输入文件只读，不能接收节点产出');if(b.canvasKind==='artifact')throw Error('产出文件的来源由生成节点确定，不能手动更换');if(b.done)throw Error('已完成节点不能接收新的上游连线，仅可作为连线起点');if(scene.edges.some(e=>e[0]===from&&e[1]===to))throw Error('这条连线已存在');
   const visit=id=>id===from||scene.edges.filter(e=>e[0]===id).some(e=>visit(e[1]));if(visit(to))throw Error('连线将产生循环');return [from,to,a.canvasKind==='task'?'传递产出物':'文件输入','dependency',{fromPort,toPort}];
  }
  function removeEdge(state,edge){state.edges=state.edges.filter(e=>e[0]!==edge[0]||e[1]!==edge[1]);state.removedEdges=state.removedEdges||[];if(!state.removedEdges.some(e=>e[0]===edge[0]&&e[1]===edge[1]))state.removedEdges.push(edge.slice(0,2))}
@@ -51,5 +62,5 @@ const TaskCanvasModel=(()=>{
  function addDeliverable(state,scene,id){const file=scene.nodes.find(n=>n.id===id);if(!file||file.canvasKind==='task')throw Error('请选择画布上的文件');state.deliverables=state.deliverables||[];if(state.deliverables.some(d=>d.nodeId===id||d.name===file.name))return false;state.deliverables.push({nodeId:file.id,name:file.name,sourceKind:file.canvasKind,producer:file.producer||null});return true}
  function removeDeliverable(state,id){state.deliverables=(state.deliverables||[]).filter(d=>d.nodeId!==id)}
  function artifact(state,producer,name){if(state.artifacts.some(a=>a.name===name))throw Error('同名产出已存在');const a={id:uid('FILE'),name,producer};state.artifacts.push(a);return a}
- return {uid,inputId,seed,createConversation,conversationContext,seedResearch,supportsTask,project,connect,removeEdge,inheritedFiles,addDeliverable,removeDeliverable,artifact};
+ return {uid,inputId,seed,createConversation,conversationContext,seedResearch,supportsTask,project,taskPredecessors,advanceReady,connect,removeEdge,inheritedFiles,addDeliverable,removeDeliverable,artifact};
 })();

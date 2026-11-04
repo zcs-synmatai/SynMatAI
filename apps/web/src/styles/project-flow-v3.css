@@ -1,7 +1,7 @@
 /* V3 only. Frozen V2 loads its own styles and never imports this file. */
 .flow-v3-active .rf-project-context{display:none!important}
 .flow-v3-active .rf-page.project-v3{height:calc(100dvh - var(--rf-top-height,48px));--rf-context-height:0px;grid-template-columns:minmax(0,1fr)}
-.project-v3 .pv3-main{--pv3-agent-width:310px;min-height:0}
+.project-v3 .pv3-main{--pv3-agent-width:310px;--pv3-boundary-inset:12px;--pv3-boundary-width:56px;--pv3-boundary-gap:12px;min-height:0}
 .project-v3 .pv3-main .rf-copilot.fc-agent{left:0!important;top:0!important;bottom:0!important;width:var(--pv3-agent-width)!important;max-width:none;height:auto!important;border-radius:0;border-width:0 1px 0 0;border-color:#e5dfed;box-shadow:none;z-index:12}
 .project-v3 .fc-agent .rf-copilot-heading>.icon-btn,.project-v3 .fc-agent .rf-reopen-chat{display:none!important}
 .project-v3 .pv3-main .fc-toolbar,.project-v3 .pv3-main .fc-minimap{display:none}
@@ -25,6 +25,10 @@
 .pv3-node-description{font-size:12px;color:#a18dab;line-height:1.6}
 .pv3-title-copy{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-width:0}
 .pv3-main[data-hierarchy-level=internal] .fc-node{min-height:132px}
+.pv3-main[data-hierarchy-level=internal] .fc-node:not(.pv3-file-card):not(.pv3-gate-card) .rf-task-node-top{display:grid;grid-template-columns:15px minmax(0,1fr) max-content;align-items:center;gap:6px;box-sizing:border-box;padding-right:25px}
+.pv3-main[data-hierarchy-level=internal] .fc-node:not(.pv3-file-card):not(.pv3-gate-card) .rf-task-node-top .fc-node-code{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pv3-main[data-hierarchy-level=internal] .fc-node:not(.pv3-file-card):not(.pv3-gate-card) .rf-task-node-top .rf-status{max-width:82px;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none;font-size:10px;padding:2px 5px}
+.pv3-main[data-hierarchy-level=internal] .fc-node:not(.pv3-file-card):not(.pv3-gate-card) .rf-task-node-top .rf-status svg{width:10px;height:10px;flex:none}
 .pv3-main[data-hierarchy-level=internal] .fc-node .rf-task-scope{display:none}
 .pv3-main[data-hierarchy-level=internal] .pv3-title-copy{font-size:14px;line-height:1.7}
 .pv3-main[data-hierarchy-level=internal] .fc-node.pv3-file-card{box-sizing:border-box;width:220px;min-height:64px;height:auto;display:flex;align-items:center;gap:10px;padding:10px 12px;border-style:solid;border-color:#ddd5ea;background:#fff;box-shadow:0 3px 10px #4c31700a}
@@ -42,8 +46,8 @@
 .pv3-main .fc-node.pv3-gate-card:hover{background:#e7ddfb;border-color:#754de0}
 .pv3-main .fc-node.pv3-gate-card.fc-multi-selected{background:#e5d9ff;border-color:#6840d7;box-shadow:0 0 0 3px #734ce52a}
 .pv3-stage-caption{position:absolute;left:calc(var(--pv3-agent-width) + 24px);bottom:73px;max-width:calc(100% - var(--pv3-agent-width) - 48px);font-size:10px;color:#9f8aaf;pointer-events:none}
-.pv3-boundary{position:absolute;top:var(--pv3-top-clearance,112px);bottom:80px;width:56px;border:1px solid #e6deee;border-radius:9px;background:#faf8fdeb;z-index:8;display:flex;flex-direction:column;overflow:visible}
-.pv3-input{left:calc(var(--pv3-agent-width) + 12px);border-left:2px solid #c8b5ec}
+.pv3-boundary{position:absolute;top:var(--pv3-top-clearance,112px);bottom:80px;width:var(--pv3-boundary-width,56px);border:1px solid #e6deee;border-radius:9px;background:#faf8fdeb;z-index:8;display:flex;flex-direction:column;overflow:visible}
+.pv3-input{left:calc(var(--pv3-agent-width) + var(--pv3-boundary-inset,12px));border-left:2px solid #c8b5ec}
 .pv3-output{right:12px;border-right:2px solid #c8b5ec}
 .pv3-boundary-heading{position:relative;display:grid;place-items:center;width:100%;min-height:50px;padding:6px;border-bottom:1px solid #eee7f4;flex-shrink:0;text-align:center}
 .pv3-boundary-nav-icon{display:grid;place-items:center;width:28px;height:28px;border:1px solid #dfd2ef;border-radius:50%;background:#f3edfc;color:#7147c5;transition:background .15s,color .15s,transform .15s}
@@ -59,7 +63,7 @@
 .pv3-boundary-files>button.pv3-expected-file{background:transparent;border:1px dashed #d9ccea;color:#b39bc9}
 .pv3-empty-files{font-size:15px;color:#c6b8d2;padding:9px 0}
 @media(max-width:1200px){.project-v3 .pv3-main{--pv3-agent-width:280px!important}.pv3-scene-count{display:none}.project-v3 .fc-zoom-controls [data-fc-layout]{display:none}}
-@media(max-width:800px){.project-v3 .pv3-main{--pv3-agent-width:240px!important}.pv3-topbar{left:calc(var(--pv3-agent-width) + 8px);right:8px}.pv3-navigation{margin-left:3px;padding-left:5px}.pv3-workspace-switch{margin-right:4px;padding-right:5px}.pv3-workspace-state-switch button,.pv3-view-tabs>button{width:30px;height:34px}.pv3-workspace-state-switch button svg,.pv3-view-tabs>button svg{width:16px;height:16px}.pv3-boundary{width:52px}.pv3-open-workbench{display:none}.pv3-context-path{font-size:10px}.project-v3 .fc-zoom-controls [data-fc-current]{display:none}.project-v3 .fc-commandbar>button{width:27px;height:29px}.project-v3 .fc-bottom{max-width:calc(100% - var(--pv3-agent-width) - 175px)}}
+@media(max-width:800px){.project-v3 .pv3-main{--pv3-agent-width:240px!important;--pv3-boundary-width:52px}.pv3-topbar{left:calc(var(--pv3-agent-width) + 8px);right:8px}.pv3-navigation{margin-left:3px;padding-left:5px}.pv3-workspace-switch{margin-right:4px;padding-right:5px}.pv3-workspace-state-switch button,.pv3-view-tabs>button{width:30px;height:34px}.pv3-workspace-state-switch button svg,.pv3-view-tabs>button svg{width:16px;height:16px}.pv3-open-workbench{display:none}.pv3-context-path{font-size:10px}.project-v3 .fc-zoom-controls [data-fc-current]{display:none}.project-v3 .fc-commandbar>button{width:27px;height:29px}.project-v3 .fc-bottom{max-width:calc(100% - var(--pv3-agent-width) - 175px)}}
 @media(prefers-reduced-motion:reduce){.pv3-boundary{transition:none}}
 
 @media(prefers-reduced-motion:reduce){.pv3-view-tabs>button{transition:none}}
@@ -72,6 +76,8 @@
 .pv3-overview-group-name{font-size:10px;font-weight:600;letter-spacing:.08em;color:#9b85b2;line-height:1.4;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .pv3-overview-row{display:flex;align-items:center;justify-content:center;gap:13px;min-height:28px}
 .pv3-overview-column{display:flex;flex-direction:column;align-items:center;gap:3px}
+.pv3-overview-placeholder{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:48px;height:22px;color:#aa9abc;font-size:12px;line-height:1;white-space:nowrap}
+.pv3-overview-placeholder small{font-size:9px;font-weight:500;color:#8f7ba8}
 .pv3-overview-node{position:relative;display:grid;place-items:center;flex:none;width:27px;height:27px;padding:0;border:0;background:transparent;cursor:pointer;overflow:visible;z-index:1}
 .pv3-overview-node.pv3-overview-hot,.pv3-overview-node:focus-visible{z-index:5}
 .pv3-overview-disc{position:relative;display:grid;place-items:center;width:22px;height:22px;border:1px solid #d9cdef;border-radius:50%;background:#fff;color:#8f70b0;box-shadow:0 1px 5px #6041800d;transform:translateY(var(--dock-lift,0px)) scale(var(--dock-scale,1));transition:transform .16s cubic-bezier(.22,1,.36,1),background .16s,border-color .16s,box-shadow .16s}

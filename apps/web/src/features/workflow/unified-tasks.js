@@ -1,7 +1,7 @@
 /* A view over task todos and stable experiment identities; no copied ELN state. */
 window.UnifiedTasks=(()=>{
- const types=['实验','文档','调研','会议','审批','分析','DOE设计','其他'];
- const modes={human:'人工完成',ai:'AI 完成',collaborative:'人机协作'};
+ const types=['调研','文档整理','计算模拟','实验','测试','自定义'];
+ const modes={human:'人工完成',ai:'AI 完成',collaborative:'人机协作',simulation:'模拟执行'};
  const statusNames={todo:'未开始',doing:'进行中',blocked:'受阻',done:'已完成'};
  const agents=['资料整理 Agent','文献调研 Agent','证据核查 Agent','配方核算 Agent','方案规划 Agent','数据分析 Agent','进度汇报 Agent','调研 Agent','DOE实验设计 Agent','实验协作 Agent','模拟计算 Agent','工艺规划 Agent'];
  const suggestedAgent=t=>/闭合|账本|配方核算/.test(t.text)?agents[3]:/文献|专利|调研/.test(t.text)?agents[1]:/核对|复核|缺口/.test(t.text)?agents[2]:agents[0];
@@ -27,20 +27,20 @@ window.UnifiedTasks=(()=>{
   for(const [key,text,type,owner] of definitions)if(!todos.some(t=>t.agentExampleKey===key||t.text===text))todos.push({text,type,owner,executionMode:'ai',collaborators:['林晓'],done:false,status:'todo',due:'',priority:'normal',inputs:[...inputs],outputs:[],estimate:'',agentExampleKey:key});
   return normalize(todos);
  }
- const infer=text=>/审批|签核/.test(text)?'审批':/会议|讨论|评审/.test(text)?'会议':/调研|专利|文献/.test(text)?'调研':/分析|复核|核对/.test(text)?'分析':'其他';
- function normalize(todos){let n=Math.max(0,...todos.map(t=>Number(String(t.id||'').replace(/^TODO-/,''))||0));for(const t of todos){t.id||='TODO-'+String(++n).padStart(3,'0');t.type||=infer(t.text);t.executionMode||='human';t.collaborators||=[];t.inputs||=[];t.outputs||=[];t.estimate||='';t.status=t.done?'done':t.status==='progress'?'doing':t.status||'todo'}return todos}
+ const infer=text=>/模拟|计算/.test(text)?'计算模拟':/实验/.test(text)?'实验':/测试|验证|测量/.test(text)?'测试':/调研|专利|文献/.test(text)?'调研':/文档|整理|报告/.test(text)?'文档整理':'自定义';
+ function normalize(todos){for(const t of todos){t.id||=WorkflowNumbering.nextTodoId(todos);t.type||=infer(t.text);t.executionMode||='human';t.collaborators||=[];t.inputs||=[];t.outputs||=[];t.estimate||='';t.status=t.done?'done':t.status==='progress'?'doing':t.status||'todo'}return todos}
  function rows(todos,experiments,state,model){normalize(todos);for(const t of todos)if(t.executionMode==='ai'&&!/Agent$/.test(t.owner||''))assignAgent(t);return [
   ...todos.map((t,index)=>({...t,name:t.text,statusName:t.executionMode==='ai'&&!t.done&&t.status==='doing'?'进行中 · Agent工作中':statusNames[t.done?'done':t.status]||'未开始',index,kind:'todo'})),
   ...experiments.map(e=>({id:e.id,name:e.name,type:'实验',executionMode:'human',owner:model.people.find(p=>p.id===e.executor)?.name||'待分配',collaborators:[model.people.find(p=>p.id===e.tester)?.name||'待分配'],estimate:e.estimate||e.due||'',statusName:e.status,done:e.status==='完成',kind:'experiment',experiment:e,delivery:model.delivery(state,e)}))
  ]}
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const modeLabel=r=>r.executionMode==='ai'?(r.done?'AI 已完成':'AI 执行'):r.executionMode==='collaborative'?(r.done?'协作已完成':'人机协作'):'人工';
+ const modeLabel=r=>r.executionMode==='ai'?(r.done?'AI 已完成':'AI 执行'):r.executionMode==='simulation'?(r.done?'模拟已完成':'模拟执行'):r.executionMode==='collaborative'?(r.done?'协作已完成':'人机协作'):'人工';
  function render(rows,filters={},compact=false,locked=false){
   const filtered=rows.filter(r=>(!filters.type||r.type===filters.type)&&(!filters.mode||r.executionMode===filters.mode)&&(!filters.search||[r.id,r.name,r.owner,...r.collaborators].join(' ').toLowerCase().includes(filters.search.toLowerCase())));
-  const completed=rows.filter(r=>r.done).length,percent=rows.length?Math.round(completed/rows.length*100):0,counts={ai:rows.filter(r=>r.executionMode==='ai').length,human:rows.filter(r=>r.executionMode==='human').length,collaborative:rows.filter(r=>r.executionMode==='collaborative').length};
+  const completed=rows.filter(r=>r.done).length,percent=rows.length?Math.round(completed/rows.length*100):0,counts={ai:rows.filter(r=>r.executionMode==='ai').length,human:rows.filter(r=>r.executionMode==='human').length,collaborative:rows.filter(r=>r.executionMode==='collaborative').length,simulation:rows.filter(r=>r.executionMode==='simulation').length};
   const icon=id=>`<svg aria-hidden="true"><use href="#${id}"/></svg>`;
   const files=(names,label)=>names.length?names.map(n=>`<button class="ut-file" data-open="${esc(n)}" title="${esc(n)}">${esc(n)}</button>`).join(''):`<span class="ut-muted">未关联${label}</span>`;
-  const typeIcon=type=>({'实验':'flask','文档':'file','调研':'asset-search-icon','会议':'calendar','审批':'check','分析':'flow'})[type]||'grid';
+  const typeIcon=type=>({'实验':'flask','模拟':'grid','模拟计算':'grid','文档':'file','调研':'asset-search-icon','会议':'calendar','审批':'check','分析':'flow'})[type]||'grid';
   const row=r=>{
    const agent=/Agent$/.test(r.owner||''),state=r.statusName||'未开始';
    const input=r.kind==='experiment'?`<button class="ut-file" data-unified-asset="${esc(r.experiment.scheme.asset)}" data-version="${esc(r.experiment.scheme.version)}">SOP ${esc(r.experiment.scheme.version)}</button>`:files(r.inputs,'输入');

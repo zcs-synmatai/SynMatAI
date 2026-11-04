@@ -282,7 +282,8 @@ body.research-flow-active{overflow:hidden}.research-flow-active .app>.project-co
 .rf-page.canvas-v2 .fc-agent.fc-agent-collapsed{height:91px}
 .rf-page.canvas-v2 .fc-agent .rf-reopen-chat{writing-mode:horizontal-tb!important;transform:none;position:static;width:auto;margin:8px 14px;text-align:left;font-size:11px}
 .fc-minimap .fc-mini-agent{fill:#e4e0eb;stroke:#b9adc9}
-.fc-node-tooltip,.fc-link-popover{position:absolute;width:310px;max-width:calc(100% - 24px);padding:14px;background:#fff;border:1px solid #e4dcef;border-radius:10px;box-shadow:0 10px 30px #37234f13;z-index:12;color:#5b4e68;font-size:12px;line-height:1.8;max-height:310px;overflow:auto;overscroll-behavior:contain}
+.fc-node-tooltip,.fc-link-popover{position:absolute;width:310px;max-width:calc(100% - 24px);padding:14px;background:#fff;border:1px solid #e4dcef;border-radius:10px;box-shadow:0 12px 32px #37234f18;z-index:12;color:#5b4e68;font-size:12px;line-height:1.8;max-height:310px;overflow:auto;overscroll-behavior:contain}
+.fc-node-tooltip[role="dialog"]{width:390px;max-height:480px;padding:16px 16px 14px;border-radius:12px}
 .fc-node-tooltip[hidden],.fc-link-popover[hidden]{display:none}
 .fc-tip-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;font-size:12px}
 .fc-tip-heading strong{color:#3f314f;font-weight:600;line-height:1.8}

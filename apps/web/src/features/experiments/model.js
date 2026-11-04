@@ -12,7 +12,7 @@ const ExperimentModel=(()=>{
  {id:'plan-S6',stage:'S6',tasks:['T61','T62'],arrangement:'客户验证矩阵与准入审查',missing:['客户完整矩阵尚未冻结','客户限值及方法需确认'],source:'SOP §7 客户准入边界；workflow S6',note:'属于研发阶段，准入评审不等于量产。'}
  ];
  function sourceNode(e){return e.nodeId||(e.tasks?.includes('T12')?'T12':e.tasks?.includes('T13')?'T13':e.tasks?.includes('T22')?'T22':'');}
- function compare(a,b){const phase=['市场分析','项目立项','研发','量产'],rank=e=>Number(sourceNode(e).replace(/^T/,''))||9999;return phase.indexOf(a.phase)-phase.indexOf(b.phase)||Number(a.stage.slice(1))-Number(b.stage.slice(1))||rank(a)-rank(b)||a.route.localeCompare(b.route)||a.pre.localeCompare(b.pre)||a.id.localeCompare(b.id);}
+ function compare(a,b){const phase=['项目立项','研发','量产'],rank=e=>Number(sourceNode(e).replace(/^T/,''))||9999;return phase.indexOf(a.phase)-phase.indexOf(b.phase)||Number(a.stage.slice(1))-Number(b.stage.slice(1))||rank(a)-rank(b)||a.route.localeCompare(b.route)||a.pre.localeCompare(b.pre)||a.id.localeCompare(b.id);}
  function upgrade(s){for(const e of s.experiments){if(!e.nodeId)e.nodeId=sourceNode(e);if(e.stage!=='S1'||!routes[e.route]||e.route==='blank')continue;const legacy=`${e.route}${routes[e.route]}${e.route==='R3'?'底层 / 面层':''}相容小试`;if(e.name===legacy)e.name=`层液相容小试 · ${e.route} ${routes[e.route]}${e.route==='R3'?'（底层 / 面层）':''}`;}return s;}
  function seed(){
   const s={schema:1,granularity:'一明确条件一实验单；制备组、层批、样板、测量分别存储。系统ID及行数为原型组织约定。',experiments:[],groups:{},samples:{},controls:{},measurements:[],drafts:[],config:{mergeSamePerson:true},sequence:15};

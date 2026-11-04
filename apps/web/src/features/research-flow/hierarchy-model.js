@@ -1,6 +1,6 @@
 /* V3 navigation projections. These views never rewrite execution dependencies. */
 const FlowHierarchyModel=(()=>{
- const phases=['市场分析','项目立项','研发','量产'];
+ const phases=['项目立项','研发','量产'];
  const workspaceSub={S1:'实施条件验证',S2:'路线筛选',S3:'因子筛选',S4:'工艺窗口优化',S5:'耐候与老化',S6:'客户验证'};
  function adjacent(views,phase,stage){const chain=phases.flatMap(p=>views[p].stages.map(s=>({...s,phase:p}))),index=chain.findIndex(s=>s.phase===phase&&s.id===stage);return {before:chain[index-1]||null,after:chain[index+1]||null,current:chain[index]}}
  function boundaryPackage(views,phase,stage,side){let next=adjacent(views,phase,stage)[side];while(next){const tasks=views[next.phase].tasks.filter(t=>t.stage===next.id&&!t.fileNode);if(tasks.length)return {...tasks[side==='before'?tasks.length-1:0],phase:next.phase,stageId:next.id};next=adjacent(views,next.phase,next.id)[side]}return null}
@@ -13,20 +13,20 @@ const FlowHierarchyModel=(()=>{
   const input={id:inputId,name:'输入',viewKind:'gate',gate:'input',virtual:true,scope:kind,status:'待开始',condition:kind+'的统一输入起点'},output={id:outputId,name:'输出',viewKind:'gate',gate:'output',virtual:true,scope:kind,status:'待开始',condition:kind+'的统一交付终点'};
   const bridge=(a,b)=>[a,b,'','virtual',{fromPort:'right',toPort:'left'}];
   for(const n of real)if(!incoming.has(n.id))links.push(bridge(inputId,n.id));
-  for(const n of real)if(!outgoing.has(n.id))links.push(bridge(n.id,outputId));
+  for(const n of real)if(!outgoing.has(n.id)&&!n.openTerminal)links.push(bridge(n.id,outputId));
   if(!real.length)links.push(bridge(inputId,outputId));
   return {nodes:[input,...real,output],edges:links,inputId,outputId,realEdgeCount:edges.filter(e=>ids.has(e[0])&&ids.has(e[1])).length};
  }
  function stages(views,phase,status,collapsedRounds=[]){
   const researchStages=views.研发.stages||[],roundOneStages=researchStages.filter(stage=>(stage.round||1)===1&&!stage.empty),roundTwoStages=researchStages.filter(stage=>stage.round===2&&!stage.empty);
-  const nodes=[],positions={},groups=[],collapsed=new Set(collapsedRounds),definitions=[{id:'initiation',name:'立项',phases:['市场分析','项目立项']},{id:'research-1',name:'研发',stages:roundOneStages,round:1,pending:!roundOneStages.length},...(roundTwoStages.length?[{id:'research-2',name:'研发阶段2',stages:roundTwoStages,round:2,pending:false}]:[]),{id:'production',name:'量产',phases:['量产']}];
+  const nodes=[],positions={},groups=[],collapsed=new Set(collapsedRounds),definitions=[{id:'initiation',name:'立项',phases:['项目立项']},{id:'research-1',name:'研发',stages:roundOneStages,round:1,pending:!roundOneStages.length},...(roundTwoStages.length?[{id:'research-2',name:'研发阶段2',stages:roundTwoStages,round:2,pending:false}]:[]),{id:'production',name:'量产',phases:['量产']}];
   // A loose, readable traversal gives the full project room to breathe at fit-to-canvas zoom.
   const anchors=[{x:80,y:180},{x:370,y:215},{x:660,y:170},{x:950,y:220},{x:960,y:490},{x:675,y:530},{x:385,y:490},{x:90,y:530},{x:100,y:800},{x:390,y:770},{x:690,y:805},{x:980,y:770}];let index=0;
   for(const definition of definitions){const ids=[];
    if(definition.pending){const n={id:definition.round===1?'RD1':'RD2',name:'待规划生成',title:'研发 · 待规划生成',phase:'研发',stageId:null,viewKind:'round',groupId:definition.id,status:'待开始',count:0,condition:definition.round===1?'等待项目立项与 SOP 审批完成':'等待上一轮客户准入收集反馈并完成阶段任务确认',deliverables:[],pending:true};nodes.push(n);ids.push(n.id)}
    else if(definition.round&&collapsed.has(definition.id)){const stages=definition.stages,states=stages.map(s=>status('研发',s.id)),state=states.every(s=>s==='已完成')?'已完成':states.every(s=>s==='待开始')?'待开始':'进行中';const n={id:'RD'+definition.round,name:'研发阶段'+definition.round,title:'研发阶段 '+definition.round+' 工作流程',phase:'研发',stageId:stages[0]?.id,viewKind:'round',groupId:definition.id,status:state,count:stages.length,condition:'已折叠 '+stages.length+' 个研发子阶段',deliverables:[],roundSummary:true};nodes.push(n);ids.push(n.id)}
    else if(definition.stages){for(const stage of definition.stages){const feedback=(stage.sourceStageId||stage.id)==='S6',n={id:stage.id,name:feedback?'客户准入 · 用户反馈':stage.short||stage.title,title:stage.title,phase:'研发',stageId:stage.id,viewKind:'stage',groupId:definition.id,status:status('研发',stage.id),count:views.研发.tasks.filter(t=>t.stage===stage.id).length,condition:feedback?[stage.goal,'收集本轮用户反馈，作为下一轮研发规划输入'].filter(Boolean).join('；'):stage.goal,deliverables:requirements(stage),feedback};nodes.push(n);ids.push(n.id)}}
-   else for(const p of definition.phases){for(const stage of views[p].stages){const leaf=['市场分析','项目立项'].includes(p),id=leaf?'PH'+(phases.indexOf(p)+1):stage.id,n={id,name:leaf?p:stage.short||stage.title,title:stage.title,phase:p,stageId:stage.id,viewKind:'stage',groupId:definition.id,status:leaf?status(p):status(p,stage.id),count:views[p].tasks.filter(t=>t.stage===stage.id).length,condition:stage.goal,deliverables:requirements(stage)};nodes.push(n);ids.push(id)}}
+   else for(const p of definition.phases){for(const stage of views[p].stages){const leaf=p==='项目立项',id=leaf?'PH'+(phases.indexOf(p)+1):stage.id,n={id,name:leaf?p:stage.short||stage.title,title:stage.title,phase:p,stageId:stage.id,viewKind:'stage',groupId:definition.id,status:leaf?status(p):status(p,stage.id),count:views[p].tasks.filter(t=>t.stage===stage.id).length,condition:stage.goal,deliverables:requirements(stage)};nodes.push(n);ids.push(id)}}
    for(const id of ids){positions[id]=anchors[index]||{x:80+(index%4)*290,y:180+Math.floor(index/4)*300};index++}
    const statuses=ids.map(id=>nodes.find(n=>n.id===id).status),groupStatus=statuses.every(s=>s==='已完成')?'已完成':statuses.every(s=>s==='待开始')?'待开始':'进行中';groups.push({...definition,ids,status:groupStatus,collapsed:collapsed.has(definition.id)});
   }
@@ -44,15 +44,16 @@ const FlowHierarchyModel=(()=>{
 
  }
  function workspaceKey(phase,stage,task){const round=/^R(\d+)-/.exec(stage)?.[1],base=stage.replace(/^R\d+-/,''),sub=phase==='研发'?(round?'研发阶段'+round+' · ':'')+(workspaceSub[base]||stage):phase==='量产'?({L1:'小试',L2:'中试',L3:'量产'}[stage]||stage):'';return [phase,sub,task.name].join('/')}
- function internal(task,{phase,stage,cached,thermal,taskRows}={}){
+ function internal(task,{phase,stage,cached,thermal,taskRows,packageStatus}={}){
   if(task.demo||task.name==='计算模拟'){const nodes=structuredClone(thermal||[]).map(n=>({...n,viewKind:'task',status:n.status==='done'?'已完成':n.status==='running'?'进行中':'待开始',owner:'模拟计算 Agent',condition:'计算模拟演示，双击查看节点说明或打开原计算工作台。',deliverables:[]})),ids=new Set(nodes.map(n=>n.id)),edges=[];for(const n of nodes)for(const a of n.bindings||[])if(ids.has(a))edges.push([a,n.id,'材料物性','dependency']);for(const n of nodes.filter(n=>n.type==='macro'))if(ids.has('schedule1'))edges.push([n.id,'schedule1','计算配置','dependency']);if(ids.has('schedule1')&&ids.has('analysis1'))edges.push(['schedule1','analysis1','计算结果','dependency']);return {...enclose(nodes,edges,'task/'+phase+'/'+stage+'/'+task.id,'工作包'),docs:{},example:false}}
-  let todos=structuredClone(taskRows||cached?.todos||[{text:task.condition||'核对本工作包的目标与输入',done:false,status:'todo',owner:'林晓'},...(task.deliverables||[]).map(d=>({text:'准备：'+d.description,done:false,status:'todo',owner:'林晓'}))]);
+  const fallback=task.custom?[{id:'TODO-001',text:'默认任务',name:'默认任务',type:'自定义',done:false,status:'todo',owner:'林晓',executionMode:'human'}]:[{text:task.condition||'核对本工作包的目标与输入',done:false,status:'todo',owner:'林晓'},...(task.deliverables||[]).map(d=>({text:'准备：'+d.description,done:false,status:'todo',owner:'林晓'}))];
+  let todos=structuredClone(taskRows||cached?.todos||fallback);
   const docs=structuredClone(cached?.docs||{}),sharedBrief=task.name+'—任务资料.md';
   if(task.workItems?.length){const saved=todos;todos=task.workItems.map((item,index)=>{const previous=saved.find(row=>row.id===item.id||row.name===item.name||row.text===item.name);return {...item,...previous,id:item.id,text:item.name,name:item.name,status:previous?.status||item.status||(index?'todo':'doing'),done:previous?.done??false}})}
   if(!Object.hasOwn(docs,sharedBrief))docs[sharedBrief]='# '+task.name+' · 任务资料\n\n## 工作目标\n'+(task.condition||'请核对本工作包的目标、输入与交付要求。')+'\n\n## 输入来源\n'+(task.input||'承接上游工作包的已确认资料。');
   if(todos.length&&!todos.some(item=>(item.inputs||[]).length))todos=todos.map(item=>({...item,inputs:[sharedBrief]}));
-  const rows=todos.map((t,i)=>({...t,id:t.id||'TODO-'+String(i+1).padStart(3,'0'),name:t.text||t.name,statusName:t.done?'已完成':t.status==='doing'?'进行中':t.statusName||'待开始',kind:t.kind||'todo',type:t.type||'任务',inputs:t.inputs||[],outputs:t.outputs||[]})),canvas={...TaskCanvasModel.seed(),...structuredClone(cached?.taskCanvas||{})},scene=TaskCanvasModel.project(rows,Object.keys(docs),canvas);
-  const nodes=scene.nodes.map(n=>({...n,viewKind:n.canvasKind==='task'?'task':'file',status:n.statusName||'待开始',condition:n.canvasKind==='task'?n.name:'工作台中已有文件的只读引用',deliverables:n.outputs||[]}));
+  const canvas={...TaskCanvasModel.seed(),...structuredClone(cached?.taskCanvas||{})},packageActive=/进行中|doing|progress/.test(String(packageStatus||task.status||task.statusName||''));TaskCanvasModel.advanceReady(todos,Object.keys(docs),canvas,packageActive);const rows=todos.map((t,i)=>{const id=t.id||'TODO-'+String(i+1).padStart(3,'0');return {...t,id,displayId:WorkflowNumbering.fullTodoId(task.id,id),name:t.text||t.name,statusName:t.done?'已完成':t.status==='doing'?'进行中':t.statusName||'待开始',kind:t.kind||'todo',type:t.type||'临时任务',inputs:t.inputs||[],outputs:t.outputs||[]}}),activeRows=rows.filter(row=>row.statusName==='进行中'),agentCandidates=activeRows.length?activeRows:packageActive?rows.filter(row=>row.statusName!=='已完成'):[],agentRows=agentCandidates.filter(row=>[...String(task.id)+row.id].reduce((sum,char)=>sum+char.charCodeAt(0),0)%3===0);if(agentCandidates.length&&!agentRows.length)agentRows.push(agentCandidates[0]);agentRows.forEach(row=>{row.agentWorking=true});const scene=TaskCanvasModel.project(rows,Object.keys(docs),canvas);
+  const nodes=scene.nodes.map(n=>({...n,viewKind:n.canvasKind==='task'?'task':'file',status:n.statusName||'待开始',condition:n.canvasKind==='task'?n.name:'工作台中已有文件的只读引用',deliverables:n.canvasKind==='task'?[...(n.deliverables||[]).map(item=>typeof item==='string'?item:item.description||item.name).filter(Boolean),...(n.outputs||[])]:[]}));
   return {...enclose(nodes,scene.edges,'task/'+phase+'/'+stage+'/'+task.id,'工作包'),docs,example:false};
  }
  function integrate(views,{internalFor=()=>({nodes:[],edges:[]})}={}){

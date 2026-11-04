@@ -3,10 +3,11 @@ import vm from 'node:vm';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 const source=readFileSync(new URL('../apps/web/src/features/workflow/unified-tasks.js',import.meta.url),'utf8');
+const numberingSource=readFileSync(new URL('../apps/web/src/features/workflow/numbering-model.js',import.meta.url),'utf8');
 const editorSource=readFileSync(new URL('../apps/web/src/features/workflow/task-todo-editor.js',import.meta.url),'utf8');
 const taskStyles=readFileSync(new URL('../apps/web/src/styles/unified-tasks.css',import.meta.url),'utf8');
 const model=readFileSync(new URL('../apps/web/src/features/experiments/model.js',import.meta.url),'utf8');
-const {U,M}=vm.runInNewContext(model+'\nconst window={};\n'+source+'\n({U:window.UnifiedTasks,M:ExperimentModel})',{Date,JSON,Set});
+const {U,M}=vm.runInNewContext(model+'\nconst window={};\n'+numberingSource+'\nconst WorkflowNumbering=window.WorkflowNumbering;\n'+source+'\n({U:window.UnifiedTasks,M:ExperimentModel})',{Date,JSON,Set});
 test('legacy todos keep stable identities and fields across normalization and deletion',()=>{
  const todos=[{text:'核对材料',done:false,status:'progress'},{text:'文献调研',done:true}];U.normalize(todos);
  assert.equal(todos[0].status,'doing');assert.equal(todos[1].type,'调研');const id=todos[1].id;

@@ -36,7 +36,14 @@ const FlowDraft = (() => {
   const changingIds=new Set(allowNewTaskDependencies?[...next.tasks.filter(t=>t.custom&&!previous.tasks.some(p=>p.id===t.id)),...previous.tasks.filter(t=>t.custom&&!next.tasks.some(p=>p.id===t.id))].map(t=>t.id):[]);
   const removedIds=new Set(allowRemovedDependencies?[...previous.tasks.filter(t=>!next.tasks.some(n=>n.id===t.id)),...next.tasks.filter(t=>!previous.tasks.some(n=>n.id===t.id))].filter(t=>!completedIds.includes(t.id)).map(t=>t.id):[]);
   const incident=(view,id)=>Object.entries(view.edges).flatMap(([stage,edges])=>edges.filter(([a,b])=>(a===id||b===id)&&!(a===id&&changingIds.has(b))&&!removedIds.has(a)&&!removedIds.has(b)).map(e=>JSON.stringify([stage,...e]))).sort();
-  for(const id of completedIds){if(JSON.stringify(previous.tasks.find(t=>t.id===id))!==JSON.stringify(next.tasks.find(t=>t.id===id)))throw new Error('已完成节点不可修改、删除或重新分配负责人。');if(!allowCompletedEdges&&JSON.stringify(incident(previous,id))!==JSON.stringify(incident(next,id)))throw new Error('已完成节点的关联流程连线不可修改。')}
+  const connected=(view,id,direction)=>Object.entries(view.edges).flatMap(([stage,edges])=>edges.filter(([from,to])=>direction==='incoming'?to===id:from===id).map(edge=>JSON.stringify([stage,...edge]))).sort();
+  for(const id of completedIds){
+   if(JSON.stringify(previous.tasks.find(t=>t.id===id))!==JSON.stringify(next.tasks.find(t=>t.id===id)))throw new Error('已完成节点不可修改、删除或重新分配负责人。');
+   if(!allowCompletedEdges){if(JSON.stringify(incident(previous,id))!==JSON.stringify(incident(next,id)))throw new Error('已完成节点的关联流程连线不可修改。');continue}
+   const oldIncoming=connected(previous,id,'incoming'),newIncoming=connected(next,id,'incoming'),oldOutgoing=connected(previous,id,'outgoing'),newOutgoing=new Set(connected(next,id,'outgoing'));
+   if(JSON.stringify(oldIncoming)!==JSON.stringify(newIncoming))throw new Error('已完成节点不能接收新的上游连线，仅可作为连线起点。');
+   if(oldOutgoing.some(edge=>!newOutgoing.has(edge)))throw new Error('已完成节点已有的下游连线不可删除或修改。');
+  }
   return true;
  }
  function withSimulationDemo(view){

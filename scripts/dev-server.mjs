@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const webRoot = resolve(projectRoot, 'apps/web');
 const publicRoot = resolve(webRoot, 'public');
-const mime = { '.pdf':'application/pdf', '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.mjs':'text/javascript; charset=utf-8', '.png':'image/png', '.svg':'image/svg+xml', '.json':'application/json; charset=utf-8', '.xyz':'text/plain; charset=utf-8', '.eln':'application/zip' };
+const mime = { '.pdf':'application/pdf', '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.mjs':'text/javascript; charset=utf-8', '.md':'text/markdown; charset=utf-8', '.png':'image/png', '.svg':'image/svg+xml', '.json':'application/json; charset=utf-8', '.xyz':'text/plain; charset=utf-8', '.eln':'application/zip' };
 
 function inside(root, candidate) {
   const name = relative(root, candidate);

@@ -62,6 +62,7 @@ test('workspace scripts load before their consumers and expose only two primary 
  assert.match(research,/row\.ondblclick/);assert.match(research,/row\.onkeydown/);
  assert.match(research,/dock!==['"]assets['"].*closest\(['"]\.research-dock,\[data-dock\]/);
  assert.match(research,/class="research-tab-label"/);assert.match(research,/class="research-tab-close"/);
+ assert.match(research,/class="research-agent-name"/);assert.match(research,/class="research-task-name"/);
 });
 
 test('workspace controller switches routes, synchronizes breadcrumbs and persists wide chat widths',async()=>{
@@ -106,6 +107,8 @@ test('workspace shell CSS keeps task breadcrumbs in the AI rail and uses shared 
  assert.match(css,/body\.task-workspace-active \.workspace-chat-breadcrumb/);
  assert.match(css,/\.research-tab-label\{min-width:0;overflow:hidden;text-overflow:ellipsis/);
  assert.match(css,/\.research-tab\.is-active/);
+ assert.match(css,/\.research-task-name\{min-width:0;overflow:hidden;text-overflow:ellipsis/);
+ assert.match(css,/#research-reset\{flex:0 0 30px/);
  assert.match(css,/\.workspace-column-resizer/);
  assert.match(css,/\.workspace-column-resizer:before\{[^}]*width:1px/);
  assert.match(css,/\.workspace-conversation-toggle\.is-expanded/);
@@ -129,20 +132,27 @@ test('entering the task workspace restores selection or resolves the first activ
  const shell=await source('src/features/workflow/workspace-shell.js');
  const page=await source('src/features/projects/page.js');
  const flow=await source('src/features/research-flow/page.js');
- assert.match(page,/entry==='project-workbench'\|\|location\.hash==='#workspace\/task'/);
- assert.match(page,/ProjectWorkspaceShell\?\.openPrimaryTaskWorkspace\(project\)/);
+ assert.match(page,/entry==='project-workbench'.*location\.hash==='#workspace\/task'.*preferInProgress:false/);
+ assert.match(page,/ProjectWorkspaceShell\?\.openPrimaryTaskWorkspace\(project,\{preferInProgress\}\)/);
  assert.match(shell,/function|const normalizeLegacyTaskRoute/);
  assert.match(shell,/location\.hash!==['"]#task['"]/);
  assert.match(shell,/project\?\.lastRoute===['"]#workspace\/flow['"]/);
  assert.match(shell,/typeof ProjectStore!==['"]undefined['"]\?ProjectStore:null/);
  assert.match(shell,/synmat:open-project-flow-context/);
  assert.match(shell,/synmat:request-primary-task-workspace/);
+ assert.match(shell,/preferInProgress=true/);
+ assert.match(shell,/restorePrimaryTaskWorkspace=.*preferInProgress:false/);
+ assert.doesNotMatch(shell,/if\(!resolved\)document\.dispatchEvent\(new CustomEvent\('synmat:task-workspace-visible'/);
  assert.match(shell,/openPrimaryTaskWorkspace/);
  assert.match(shell,/addEventListener\('popstate',normalizeLegacyTaskRoute\)/);
  assert.match(shell,/addEventListener\('hashchange',normalizeLegacyTaskRoute\)/);
+ assert.match(shell,/!location\.hash\)history\.replaceState\(null,''.*#projects/);
+ assert.doesNotMatch(shell,/!location\.hash\)queueMicrotask\(restorePrimaryTaskWorkspace\)/);
  assert.match(flow,/ProjectStore\.setLastRoute\('#workspace\/flow'\)/);
  assert.match(flow,/ProjectWorkspaceEntryModel\.resolve/);
  assert.match(flow,/addEventListener\('synmat:request-primary-task-workspace'/);
+ assert.match(page,/event\?\.isTrusted/);
+ assert.match(page,/location\.hash===['"]#workspace\/task['"].*preferInProgress:false/);
  const runtime={};vm.createContext(runtime);vm.runInContext(await source('src/features/workflow/project-workspace-entry-model.js'),runtime);
  const views={项目立项:{tasks:[{id:'P1',name:'立项材料准备'},{id:'P2',name:'组织立项审批'}]},研发:{tasks:[{id:'SIM',name:'计算模拟'}]},量产:{tasks:[]}};
  const statuses={'项目立项/P1':'进行中','项目立项/P2':'待开始','研发/SIM':'进行中'};
@@ -151,6 +161,8 @@ test('entering the task workspace restores selection or resolves the first activ
  assert.equal(first.phase,'项目立项');assert.equal(first.node.id,'P1');
  const selected=vm.runInContext('ProjectWorkspaceEntryModel',runtime).resolve(views,{...options,nodeId:'SIM'});
  assert.equal(selected.phase,'研发');assert.equal(selected.node.id,'SIM');
+ const menuEntry=vm.runInContext('ProjectWorkspaceEntryModel',runtime).resolve(views,{...options,nodeId:'SIM',preferInProgress:true});
+ assert.equal(menuEntry.phase,'项目立项');assert.equal(menuEntry.node.id,'P1');
  statuses['项目立项/P1']='已完成';delete statuses['研发/SIM'];
  const fallback=vm.runInContext('ProjectWorkspaceEntryModel',runtime).resolve(views,options);
  assert.equal(fallback.node.id,'P2');
@@ -205,11 +217,59 @@ test('calculation panels keep natural height and workbench chat keeps focus',asy
 
 test('flow task handoff always re-enters the primary task workspace',async()=>{
  const page=await source('src/features/research-flow/page.js');
+ const research=await source('src/features/workflow/research.js');
  assert.match(page,/close\(\{preserveRoute:true\}\);window\.ProjectWorkspace\?\.activate\('task'\)/);
  assert.match(page,/function close\(\{preserveRoute=false\}=\{\}\)/);
  assert.doesNotMatch(page,/ProjectWorkspace\?\.activate\('task'\);close\(\)/);
  assert.match(page,/classList\.remove\('assets-active','experiments-active','overview-active','projects-active','research-flow-active','flow-canvas-active','flow-v3-active'\)/);
  assert.match(page,/classList\.add\('task-workspace-active'\)/);
+ assert.match(page,/openAction:action==='file'\?'document':'conversation-assets'/);
+ assert.match(page,/enterNodeWorkspace\(id,\{openAction:'conversation-assets'\}\)/);
+ assert.match(research,/function openConversationAssets\(id\)\{previewMinimized=false;opened=\[\];active='overview'/);
+ assert.match(research,/flowWorkspace\.openAction==='conversation-assets'/);
+});
+
+test('P1T2 completes parallel TODOs without reopening the legacy flow drawer',async()=>{
+ const lifecycle=await source('src/features/research-flow/demo-lifecycle.js');
+ const research=await source('src/features/workflow/research.js');
+ const page=await source('src/features/research-flow/page.js');
+ const model=vm.runInNewContext(lifecycle+';DemoProjectLifecycle',{structuredClone}),node=model.initiationView().tasks.find(task=>task.id==='P1T2');
+ const approval=model.initiationView().tasks.find(task=>task.id==='P1T3');
+ assert.equal(node.workItemsMode,'parallel');
+ assert.equal(approval.workItemsMode,'sequential');
+ assert.deepEqual(Array.from(node.workItems,item=>item.id),['TODO-001','TODO-002']);
+ assert.deepEqual(Array.from(approval.workItems,item=>item.id),['TODO-001']);
+ assert.match(research,/parallel\|\|index===0\?'doing':'todo'/);
+ assert.match(research,/initiationSequenceVersion:6/);
+ assert.match(research,/defaultNodeCleanupVersion:1/);
+ for(const id of ['TODO-001','TODO-004','TODO-005','TODO-007'])assert.match(research,new RegExp(`'${id}'`));
+ assert.match(page,/FlowProgress\.ready\(generated/);
+ assert.match(research,/sequence\.find\(item=>item\.id===conversationId\)/);
+ assert.match(research,/id="complete-sequence-item">完成当前 TODO/);
+ assert.match(research,/确认完成当前 TODO/);
+ assert.match(research,/autoContinue:true/);
+ assert.match(research,/flowWorkspace\.node\.workItems\?\.length&&todos\.length&&todos\.every\(todo=>todo\.done\)/);
+ assert.match(page,/hasWorkItems=!!t\.workItems\?\.length/);
+ assert.match(page,/!hasWorkItems&&taskStatus\(t\)!=='待开始'/);
+});
+
+test('task conversation heading combines Agent, TODO name and package reference',async()=>{
+ const research=await source('src/features/workflow/research.js');
+ assert.match(research,/selected=dialogueRow\(\),row=selected\|\|firstActiveDialogue\(\)/);
+ assert.match(research,/taskTitle=row\?\(row\.name\|\|row\.text\|\|todoId\):''/);
+ assert.match(research,/title=taskTitle\?agent\+' - '\+taskTitle:agent/);
+ assert.match(research,/class="research-task-name"/);
+ assert.match(research,/function firstActiveDialogue\(\)/);
+ assert.match(research,/if\(flowWorkspace\?\.autoFocusFirstTask\)\{const first=firstActiveDialogue\(\);if\(first\)conversationId=first\.id\}/);
+ assert.doesNotMatch(research,/class="research-session"/);
+ assert.match(research,/packageId\+'-'\+todoId/);
+ assert.match(research,/<small title=/);
+});
+
+test('entering a package focuses its first active TODO by default',async()=>{
+ const [flow,lifecycle]=await Promise.all([source('src/features/research-flow/page.js'),source('src/features/research-flow/demo-lifecycle.js')]);
+ assert.match(flow,/autoFocusFirstTask:e\.detail\.autoFocusFirstTask!==false/);
+ assert.match(lifecycle,/nodeId:'P1T2',autoFocusFirstTask:true/);
 });
 
 test('flow canvas initializes its camera before cards can receive focus',async()=>{
@@ -223,4 +283,74 @@ test('flow canvas initializes its camera before cards can receive focus',async()
  assert.match(canvas,/const row=card\.querySelector\('\.rf-task-node-top'\);if\(row\)/);
  assert.match(canvas,/querySelector\('\[data-select-node\]'\)\?\.setAttribute/);
  assert.match(hierarchy,/if\(!\(direction\|\|slide\)\|\|reduced\)\{switching=true;main\.setAttribute\('aria-busy','true'\);requestAnimationFrame\(commit\);return\}/);
+});
+
+test('special task previews use an 80 percent workspace and flow TODOs remain editable',async()=>{
+ const controller=await source('src/features/workflow/project-workspace-controller.js');
+ const research=await source('src/features/workflow/research.js');
+ const hierarchy=await source('src/features/research-flow/hierarchy-view.js');
+ const canvas=await source('src/features/research-flow/canvas-view.js');
+ const css=await source('src/styles/workspace-shell.css');
+ assert.match(controller,/function emphasizePreview\(previewRatio=\.8/);
+ assert.match(controller,/chatWidth=sharedWidth\*\(1-Math\.max\(\.5,Math\.min\(\.85,previewRatio\)\)\)/);
+ assert.match(research,/append\(simulationWorkspace\);widenSpecialPreview\(\)/);
+ assert.match(research,/emphasizePreview\(\.8,\{persist:false,reason:'special-preview'\}\)/);
+ assert.match(css,/\.research-simulation-host \.calculation-workspace-head\{display:none\}/);
+ assert.match(hierarchy,/readOnly:!!workPackage\.demo/);
+ assert.match(hierarchy,/onOpenEditor:id=>ctx\.editInternalNode/);
+ assert.match(hierarchy,/onDeleteSelection:ids=>ctx\.deleteInternalNodes/);
+ assert.match(canvas,/data-full-node-delete>删除任务/);
+});
+
+test('the only preview tab minimizes to a restorable workspace rail',async()=>{
+ const research=await source('src/features/workflow/research.js');
+ const css=await source('src/styles/workspace-shell.css');
+ assert.match(research,/let previewMinimized=false/);
+ assert.match(research,/if\(opened\.length===1\)\{previewMinimized=true;render\(\);return\}/);
+ assert.match(research,/data-restore-preview/);
+ assert.match(research,/function restorePreview\(\)\{previewMinimized=false/);
+ assert.match(research,/aria-label="工作区域已最小化"/);
+ assert.match(css,/\.research-desk\.preview-minimized\{grid-template-columns:[^}]*54px/);
+ assert.match(css,/\.research-preview-minimized\{[^}]*align-items:center;justify-content:flex-start;[^}]*width:54px/);
+ assert.match(css,/\.research-preview-restore/);
+});
+
+test('new work packages start with one default TODO and the node editor stays readable',async()=>{
+ const page=await source('src/features/research-flow/page.js');
+ const hierarchy=await source('src/features/research-flow/hierarchy-model.js');
+ const canvas=await source('src/features/research-flow/canvas-view.js');
+ const flowCss=await source('src/styles/research-flow.css');
+ const taskCss=await source('src/styles/task-canvas.css');
+ assert.match(page,/pack\.custom\?\[\{id:'TODO-001',text:'默认任务'/);
+ assert.match(hierarchy,/task\.custom\?\[\{id:'TODO-001',text:'默认任务'/);
+ assert.match(canvas,/className='fc-node-secondary-actions'/);
+ assert.doesNotMatch(canvas,/编辑完整信息/);
+ assert.match(canvas,/name="type" aria-label="节点类型"/);
+ for(const type of ['结果文件','实验节点','模拟计算','分析节点','调研节点','临时任务'])assert.match(canvas,new RegExp(type));
+ assert.match(canvas,/name="deliverables" aria-label="交付要求"/);
+ assert.match(canvas,/deliverables:form\.querySelector\('\[name="deliverables"\]'\)/);
+ assert.match(page,/deliverables:\(todo\.deliverables\|\|\[\]\)/);
+ assert.match(page,/deliverables:next\.deliverables\.map\(description=>\(\{description\}\)\)/);
+ assert.match(flowCss,/\.fc-node-tooltip\[role="dialog"\]\{width:390px;max-height:480px/);
+ assert.match(taskCss,/\.fc-node-edit-actions button,.fc-node-secondary-actions button\{[^}]*white-space:nowrap/);
+ assert.match(taskCss,/@media\(max-width:520px\)\{\.fc-node-tooltip\[role="dialog"\]/);
+});
+
+test('task flow offers draggable Agent creation and highlights active Agent work',async()=>{
+ const hierarchy=await source('src/features/research-flow/hierarchy-view.js');
+ const model=await source('src/features/research-flow/hierarchy-model.js');
+ const canvas=await source('src/features/research-flow/canvas-view.js');
+ const css=await source('src/styles/task-canvas.css');
+ assert.match(hierarchy,/options\.agentPalette=true/);
+ assert.match(hierarchy,/options\.onCreateNode=\(type,position\)/);
+ assert.match(model,/agentCandidates=activeRows\.length\?activeRows:packageActive/);
+ assert.match(model,/agentRows\.forEach\(row=>\{row\.agentWorking=true\}/);
+ assert.match(canvas,/setAttribute\('aria-label','Agent 快捷创建'\)/);
+ for(const label of ['分析','调研','DOE'])assert.match(canvas,new RegExp(`'${label}'`));
+ assert.match(canvas,/安排 Agent 工作/);
+ assert.match(canvas,/o\.onCreateNode\?\.\(button\.dataset\.agentCreate,point,\[\]\)/);
+ assert.match(css,/\.pv3-agent-working/);
+ assert.match(css,/animation:agent-working-spin/);
+ assert.match(css,/\.pv3-agent-palette\{left:calc\(var\(--pv3-agent-width,0px\) \+ var\(--pv3-boundary-inset,12px\) \+ var\(--pv3-boundary-width,56px\) \+ var\(--pv3-boundary-gap,12px\)\);top:calc\(var\(--pv3-top-clearance,104px\) \+ 6px\)/);
+ assert.match(hierarchy,/agentToolGap=level==='internal'\?48:0/);
 });

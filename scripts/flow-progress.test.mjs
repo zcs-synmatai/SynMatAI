@@ -29,6 +29,7 @@ test('delivery checkboxes depend on matching assets rather than task completion 
  assert.equal(model.match({id:'D2',description:'测试记录'},[{name:'测试记录.xlsx'}]).name,'测试记录.xlsx');
 });
 test('phase and task baseline states stay independent from editable definitions',()=>{
+ assert.deepEqual(Array.from(model.phases),['项目立项','研发','量产']);
  assert.equal(model.status('项目立项',{id:'P1T3',stage:'P1'}),'已完成');
  assert.equal(model.status('量产',{id:'L1T1',stage:'L1'}),'待开始');
  assert.equal(model.status('研发',{id:'T21',stage:'S2'}),'已完成');

@@ -1,12 +1,12 @@
 /* Local prototype progress; independent from immutable workflow definitions. */
 const FlowProgress = (() => {
- const phases=['市场分析','项目立项','研发','量产'];
+ const phases=['项目立项','研发','量产'];
  const key=(phase,id)=>phase+'/'+id;
  function status(phase,task,records={}){
   const saved=records[key(phase,task.id)]?.status;
   if(['已完成','进行中','待开始'].includes(saved))return saved;
   if(task.custom)return '待开始';
-  if(phase==='市场分析'||phase==='项目立项')return '已完成';
+  if(phase==='项目立项')return '已完成';
   if(phase==='研发')return task.stage==='S1'||task.id==='T21'?'已完成':['T20','T22'].includes(task.id)?'进行中':'待开始';
   return '待开始';
  }

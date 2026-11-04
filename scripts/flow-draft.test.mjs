@@ -61,6 +61,17 @@ test('creating a dependent task can consume completed output without changing co
  for(const mutate of [v=>v.tasks[0].name='修改完成节点',v=>v.edges.S.shift(),v=>v.edges.S.push(['new','a'])]){const invalid=structuredClone(after);mutate(invalid);assert.throws(()=>model.assertCompletedUnchanged(before,invalid,['a'],true))}
 });
 
+test('completed nodes can add outgoing links but never accept new incoming links',()=>{
+ const before=fixture(),outgoing=structuredClone(before);outgoing.edges.S.push(['a','c']);
+ assert.equal(model.assertCompletedUnchanged(before,outgoing,['a'],false,false,true),true);
+ const incoming=structuredClone(before);incoming.edges.S.push(['c','a']);
+ assert.throws(()=>model.assertCompletedUnchanged(before,incoming,['a'],false,false,true),/不能接收/);
+ const removed=structuredClone(before);removed.edges.S.shift();
+ assert.throws(()=>model.assertCompletedUnchanged(before,removed,['a'],false,false,true),/不可删除或修改/);
+ const terminal=structuredClone(before);terminal.tasks.push({id:'terminal',stage:'S',name:'敞口终态'});terminal.edges.S.push(['a','terminal']);
+ assert.equal(model.validate(terminal),true);
+});
+
 test('deleting unfinished nodes cleans incident edges while preserving completed nodes and supports undo',()=>{
  const before=fixture(),after=model.removeNode(before,'b');
  assert.equal(model.assertCompletedUnchanged(before,after,['a'],false,true),true);
