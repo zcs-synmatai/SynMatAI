@@ -25,6 +25,18 @@ await rewrite('src/features/project-assets/model.js', [
   [/url:'\/assets\//g, "url:'./assets/"],
 ]);
 
+await rewrite('src/features/demo-guide/demo-guide.js', [
+  [/'\/content\//g, "'./content/"],
+]);
+
+await rewrite('content/demo-guide.md', [
+  [/\/content\//g, './content/'],
+]);
+
+await rewrite('src/features/research-flow/page.js', [
+  [/'\/archives\/workflow-v2\//g, "'./archives/workflow-v2/"],
+]);
+
 // The archived V2 page is already inside archives/workflow-v2, so its assets
 // should resolve from that directory rather than from the domain root.
 await rewrite('archives/workflow-v2/index.html', [
