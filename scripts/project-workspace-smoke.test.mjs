@@ -78,6 +78,20 @@ test('only the protected example project receives a replayable page tour',async(
  assert.match(css,/\.page-tour__mask/);assert.match(css,/\.page-tour__spotlight/);assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
 });
 
+test('project overview includes a management goal timeline with an explicit demo metric',async()=>{
+ const page=await source('src/features/project-overview/page.js');
+ const css=await source('src/styles/project-overview.css');
+ assert.match(page,/function managementGoalMarkup\(\)/);
+ assert.match(page,/核心指标达成路径/);
+ assert.match(page,/示例指标：材料热传导率/);
+ assert.match(page,/目标达成度/);
+ assert.match(page,/ov-goal-chart-desc/);
+ assert.match(page,/虚线表示尚待验证的计划目标/);
+ assert.match(css,/\.ov-management-goal/);
+ assert.match(css,/\.ov-goal-milestones/);
+ assert.match(css,/@media\(max-width:760px\)\{\.ov-management-goal-head/);
+});
+
 test('workspace controller switches routes, synchronizes breadcrumbs and persists wide chat widths',async()=>{
  const runtime=workspaceRuntime();
  vm.runInContext(await source('src/features/workflow/project-workspace-components.js'),runtime.context);
@@ -192,6 +206,7 @@ test('project flow V3 reuses the conversation shell and one topbar across every 
  assert.match(page,/if\(enteringFlowFromTask\)ProjectWorkspaceController\.balanceFlowColumns\(\)/);
  assert.match(page,/flowConversationId/);
  assert.match(page,/mountFlowWorkspaceChat/);
+ assert.match(page,/querySelector\('\.rf-chat-context'\)\?\.remove\(\)/);
  assert.match(page,/normalizeV3Navigation/);
  assert.match(hierarchy,/const activeId=ids\.length===1\?ids\[0\]:stageCurrentId/);
  assert.match(hierarchy,/if\(current\)button\.setAttribute\('aria-current','step'\);else button\.removeAttribute\('aria-current'\)/);
@@ -236,7 +251,7 @@ test('flow task handoff always re-enters the primary task workspace',async()=>{
  assert.doesNotMatch(page,/ProjectWorkspace\?\.activate\('task'\);close\(\)/);
  assert.match(page,/classList\.remove\('assets-active','experiments-active','overview-active','projects-active','research-flow-active','flow-canvas-active','flow-v3-active'\)/);
  assert.match(page,/classList\.add\('task-workspace-active'\)/);
- assert.match(page,/openAction:action==='file'\?'document':'conversation-assets'/);
+ assert.match(page,/openAction:previewType\?'special-preview':action==='file'\?'document':'conversation-assets'/);
  assert.match(page,/enterNodeWorkspace\(id,\{openAction:'conversation-assets'\}\)/);
  assert.match(research,/function openConversationAssets\(id\)\{previewMinimized=false;opened=\[\];active='overview'/);
  assert.match(research,/flowWorkspace\.openAction==='conversation-assets'/);
@@ -258,25 +273,55 @@ test('P1T2 completes parallel TODOs without reopening the legacy flow drawer',as
  for(const id of ['TODO-001','TODO-004','TODO-005','TODO-007'])assert.match(research,new RegExp(`'${id}'`));
  assert.match(page,/FlowProgress\.ready\(generated/);
  assert.match(research,/sequence\.find\(item=>item\.id===conversationId\)/);
- assert.match(research,/id="complete-sequence-item">完成当前 TODO/);
- assert.match(research,/确认完成当前 TODO/);
+ assert.match(research,/id="complete-sequence-item">完成任务/);
+ assert.match(research,/确认完成任务/);
  assert.match(research,/autoContinue:true/);
  assert.match(research,/flowWorkspace\.node\.workItems\?\.length&&todos\.length&&todos\.every\(todo=>todo\.done\)/);
  assert.match(page,/hasWorkItems=!!t\.workItems\?\.length/);
  assert.match(page,/!hasWorkItems&&taskStatus\(t\)!=='待开始'/);
 });
 
+test('research TODO completion stays in the unified workbench and synchronizes package progress',async()=>{
+ const research=await source('src/features/workflow/research.js');
+ const page=await source('src/features/research-flow/page.js');
+ assert.match(research,/function guidedSequence\(\)\{return flowWorkspace&&flowWorkspace\.phase===phase/);
+ assert.match(research,/syncTaskExecutionState\(\);const next=sequence\.find\(item=>!item\.done&&item\.status==='doing'\)/);
+ assert.match(research,/if\(next\)\{switchTodoConversation\(next\.id\);return\}document\.dispatchEvent\(new CustomEvent\('synmat:request-flow-complete'/);
+ assert.doesNotMatch(research,/if\(p==='研发'&&sub==='实施条件验证'\)return '已完成'/);
+ assert.match(page,/const first=data\.tasks\.find\(node=>FlowProgress\.status\('研发',node,progress\.tasks\)==='进行中'\)\|\|data\.tasks\[0\]/);
+});
+
 test('task conversation heading combines Agent, TODO name and package reference',async()=>{
  const research=await source('src/features/workflow/research.js');
- assert.match(research,/selected=dialogueRow\(\),row=selected\|\|firstActiveDialogue\(\)/);
- assert.match(research,/taskTitle=row\?\(row\.name\|\|row\.text\|\|todoId\):''/);
+ assert.match(research,/selected=dialogueRow\(\),scope=conversationScope\(\),row=selected\|\|\(!scope&&firstActiveDialogue\(\)\)/);
+ assert.match(research,/taskTitle=scope\?\.name\|\|\(row\?\(row\.name\|\|row\.text\|\|todoId\):''\)/);
  assert.match(research,/title=taskTitle\?agent\+' - '\+taskTitle:agent/);
  assert.match(research,/class="research-task-name"/);
  assert.match(research,/function firstActiveDialogue\(\)/);
- assert.match(research,/if\(flowWorkspace\?\.autoFocusFirstTask\)\{const first=firstActiveDialogue\(\);if\(first\)conversationId=first\.id\}/);
+ assert.match(research,/if\(flowWorkspace\?\.autoFocusFirstTask\)\{const first=firstActiveDialogue\(\);if\(first\)conversationId=first\.id/);
  assert.doesNotMatch(research,/class="research-session"/);
  assert.match(research,/packageId\+'-'\+todoId/);
  assert.match(research,/<small title=/);
+});
+
+test('stage package and task collaboration share the workbench with scoped assets',async()=>{
+ const [research,hierarchy,flow,canvas]=await Promise.all([source('src/features/workflow/research.js'),source('src/features/research-flow/hierarchy-view.js'),source('src/features/research-flow/page.js'),source('src/features/research-flow/canvas-view.js')]);
+ assert.match(research,/function stageConversationId\(\)/);
+ assert.match(research,/Supervisor Agent · 阶段/);
+ assert.match(research,/Supervisor Agent · 工作包/);
+ assert.match(research,/本阶段的资产/);
+ assert.match(research,/本工作包的资产/);
+ assert.match(hierarchy,/打开阶段协作/);
+ assert.match(hierarchy,/打开工作包协作/);
+ assert.match(hierarchy,/打开任务协作/);
+ assert.match(flow,/openCollaboration,/);
+ assert.match(flow,/openAction:'scope-conversation'/);
+ assert.match(flow,/locked:nodeLocked\(t\)/);
+ assert.match(flow,/if\(nodeLocked\(t\)\)throw Error\('已完成节点只读'\)/);
+ assert.match(canvas,/closest\('\.fc-drag-handle,\.fc-port,\.fc-node-pick'\)/);
+ assert.doesNotMatch(canvas,/closest\('\.fc-node-operations,\.fc-drag-handle,\.fc-port'\)\)hideTip/);
+ assert.match(canvas,/querySelector\('\.fc-tip-heading'\)\.insertAdjacentHTML\('afterend',[^\n]*fc-node-collaboration/);
+ assert.doesNotMatch(canvas,/tip\.insertAdjacentHTML\('beforeend',[^\n]*fc-node-collaboration/);
 });
 
 test('entering a package focuses its first active TODO by default',async()=>{
@@ -347,6 +392,56 @@ test('new work packages start with one default TODO and the node editor stays re
  assert.match(flowCss,/\.fc-node-tooltip\[role="dialog"\]\{width:390px;max-height:480px/);
  assert.match(taskCss,/\.fc-node-edit-actions button,.fc-node-secondary-actions button\{[^}]*white-space:nowrap/);
  assert.match(taskCss,/@media\(max-width:520px\)\{\.fc-node-tooltip\[role="dialog"\]/);
+});
+
+test('experiment TODOs create and retain an ELN link across every task entry path',async()=>{
+ const [store,hierarchy,flow]=await Promise.all([source('src/features/experiments/store.js'),source('src/features/research-flow/hierarchy-view.js'),source('src/features/research-flow/page.js')]);
+ const editor=await source('src/features/workflow/task-todo-editor.js');
+ const opening=await source('src/features/workflow/node-opening.js');
+ const taskCanvas=await source('src/features/workflow/task-canvas.js');
+ const flowPage=await source('src/features/research-flow/page.js');
+ assert.match(store,/function ensureTaskExperiment\(task,context=\{\}\)/);
+ assert.match(store,/task\.experimentId=id/);
+ assert.match(flow,/humanOnly:type==='实验节点'/);
+ assert.match(hierarchy,/internalEditorInfo=id=>\{const node=internalNode\(id\);if\(!node\|\|node\.virtual\|\|node\.viewKind==='file'\)return null;return ctx\.internalNodeEditorInfo/);
+ assert.match(hierarchy,/nodeEditorInfo:internalEditorInfo/);
+ assert.match(store,/tasks:\[taskKey\]/);
+ assert.match(editor,/ExperimentStore\.ensureTaskExperiment\(target/);
+ assert.doesNotMatch(editor,/data-ut-save\)'\]\)\.disabled=experiment/);
+ assert.match(taskCanvas,/ExperimentStore\.ensureTaskExperiment\(t/);
+ assert.match(flowPage,/ExperimentStore\.ensureTaskExperiment\(todo/);
+ assert.match(flowPage,/ExperimentStore\.ensureTaskExperiment\(node/);
+ assert.match(opening,/const created=ExperimentStore\.ensureTaskExperiment\(n,context\)/);
+ assert.doesNotMatch(opening,/不会自动创建实验记录/);
+});
+
+test('experiment and simulation TODOs open beside node assets in the unified workbench',async()=>{
+ const [page,research,canvas,eln,workspaceCss]=await Promise.all([source('src/features/research-flow/page.js'),source('src/features/workflow/research.js'),source('src/features/research-flow/canvas-view.js'),source('src/features/experiments/eln-workspace.js'),source('src/styles/workspace-shell.css')]);
+ assert.match(page,/function specialPreviewType\(node\)/);
+ assert.match(page,/openAction:previewType\?'special-preview'/);
+ assert.match(page,/taskNode=target\.scope==='task'\?internalWorkspaceState/);
+ assert.match(page,/normalizedType=NodeQuickEditModel\.normalizeType\(type\)/);
+ assert.match(page,/normalizedType==='模拟计算'/);
+ assert.match(research,/assetsTab='overview'/);
+ assert.match(research,/opened=\[assetsTab,elnTab\]/);
+ assert.match(research,/opened=\[assetsTab,simulationTab\]/);
+ assert.match(research,/documentLabel=name=>name===assetsTab\?'节点资产'/);
+ assert.match(research,/!opened\.includes\(elnTab\)\|\|active!==elnTab/);
+ assert.match(research,/!simulationTask\(\)\|\|!opened\.includes\(simulationTab\)/);
+ assert.match(canvas,/selectedType=\(\)=>type\?\.value\|\|meta\.type/);
+ assert.match(canvas,/executionMode:isExperiment\(\)\?'human':isSimulation\(\)\?'simulation'/);
+ assert.match(research,/person:'lin',embedded:true/);
+ assert.match(eln,/C\.env\.embedded\?'':`<div class="eln-topline">/);
+ assert.match(workspaceCss,/body\.flow-canvas-active \.rf-workspace-resizer\{grid-column:2;z-index:7;background:transparent;border:0\}/);
+});
+
+test('T11 uses contiguous task numbering with parallel experiments and one simulation',async()=>{
+ const research=await source('src/features/workflow/research.js');
+ for(let i=1;i<=6;i++)assert.match(research,new RegExp(`id:'TODO-00${i}'`));
+ assert.equal((research.match(/type:'实验'/g)||[]).length>=3,true);
+ assert.match(research,/type:'计算模拟'[^\n]*executionMode:'simulation'/);
+ assert.match(research,/branch=\['TODO-002','TODO-003','TODO-004','TODO-005'\]/);
+ assert.match(research,/t11TemplateVersion:1/);
 });
 
 test('task flow offers draggable Agent creation and highlights active Agent work',async()=>{

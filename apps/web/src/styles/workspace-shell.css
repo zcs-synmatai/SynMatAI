@@ -151,7 +151,7 @@ body.task-workspace-active .workbench>.copilot{grid-column:2;grid-row:1;order:0;
  /* Project flow uses the same persistent rail and full-height preview. */
  body.flow-canvas-active .rf-page{position:absolute;inset:0;z-index:2;width:100%;height:100dvh;grid-template-columns:var(--workspace-chat-width) var(--workspace-divider) minmax(0,1fr)!important;background:#fff}
  body.flow-canvas-active .rf-copilot{grid-column:1;padding-top:48px;border-right:0;overflow:hidden}
- body.flow-canvas-active .rf-workspace-resizer{grid-column:2;z-index:7;background:#f5f2f8;border-inline:1px solid #e2ddea}
+ body.flow-canvas-active .rf-workspace-resizer{grid-column:2;z-index:7;background:transparent;border:0}
  body.flow-canvas-active .rf-main{grid-column:3!important;position:relative;height:100dvh;min-width:0;padding:0;overflow:hidden;background:#f6f5fa}
  body.flow-canvas-active .rf-page.canvas-v2 .rf-copilot.fc-agent{position:relative!important;inset:auto!important;width:auto!important;height:auto!important;max-width:none;border:0;border-radius:0;box-shadow:none;z-index:auto}
  body.flow-canvas-active .rf-page.canvas-v2 .fc-agent .rf-copilot-heading{height:54px;min-height:54px;padding-inline:16px;border-color:#ece8f0}

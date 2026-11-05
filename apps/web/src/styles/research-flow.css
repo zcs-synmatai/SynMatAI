@@ -297,6 +297,16 @@ body.research-flow-active{overflow:hidden}.research-flow-active .app>.project-co
 .fc-node-tooltip li.ready,.fc-link-popover li.ready{color:#3e8a70}
 .fc-node-tooltip p,.fc-link-popover p{margin:4px 0;font-size:11px;color:#897b96;white-space:pre-line;line-height:1.9}
 .fc-node-tooltip p{max-height:85px;overflow:auto}
+.fc-node-collaboration{margin:10px 0 12px}
+.fc-node-collaboration>button{display:grid;grid-template-columns:30px minmax(0,1fr) 14px;align-items:center;gap:10px;width:100%;padding:10px;border:1px solid #ded2f5;border-radius:9px;background:#faf8ff;color:#4f356f;text-align:left;transition:border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.fc-node-collaboration>button:hover{background:#f5f0ff;border-color:#bba4ec;box-shadow:0 3px 12px #6c43bd12}
+.fc-node-collaboration>button:focus-visible{outline:3px solid #8358e838;outline-offset:2px}
+.fc-node-collaboration-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#eee7ff;color:#7548dd}
+.fc-node-collaboration-icon svg,.fc-node-collaboration-arrow{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6}
+.fc-node-collaboration>button>span:nth-child(2){display:flex;min-width:0;flex-direction:column;line-height:1.5}
+.fc-node-collaboration strong{font-size:12px;font-weight:600;color:#4a3265}
+.fc-node-collaboration small{font-size:10px;color:#91829e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-node-collaboration-arrow{color:#9c85b7}
 .fc-node-tooltip footer,.fc-link-popover footer{margin-top:12px;border-top:1px solid #eee7f5;padding-top:8px;font-size:10px;color:#a496b1}
 .fc-popover-heading{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#a08cab}
 .fc-popover-heading button{font-size:20px;color:#9c89aa;line-height:1;padding:2px 4px}

@@ -100,7 +100,7 @@ test('TODO confirmations continue into the next package and activate every ready
  const research=await source('src/features/workflow/research.js');
  const flow=await source('src/features/research-flow/page.js');
  assert.match(research,/function confirmSequenceItem\(\)/);
- assert.match(research,/确认完成当前 TODO/);
+ assert.match(research,/确认完成任务/);
  assert.match(research,/autoContinue:true/);
  assert.match(research,/autoFocusFirstTask/);
  assert.match(flow,/function finishNode\(id,autoContinue=false\)/);
