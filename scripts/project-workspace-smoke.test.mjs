@@ -83,12 +83,23 @@ test('project overview includes a management goal timeline with an explicit demo
  const css=await source('src/styles/project-overview.css');
  assert.match(page,/function managementGoalMarkup\(\)/);
  assert.match(page,/核心指标达成路径/);
- assert.match(page,/示例指标：材料热传导率/);
+ assert.match(page,/管理层汇报示例 · 材料热传导率/);
  assert.match(page,/目标达成度/);
  assert.match(page,/ov-goal-chart-desc/);
- assert.match(page,/虚线表示尚待验证的计划目标/);
+ assert.match(page,/基础树脂体系/);
+ assert.match(page,/高导热填料分散方案/);
+ assert.match(page,/界面偶联协同方案/);
+ assert.match(page,/梯度导热网络方案/);
+ assert.match(page,/树脂连续相/);
+ assert.match(page,/片层填料均匀分散/);
+ assert.match(page,/class="ov-goal-motif/);
+ assert.match(page,/结构图用于汇报表达/);
+ assert.match(page,/ov-goal-axis-date/);
+ assert.match(page,/平滑曲线表示指标变化趋势/);
+ assert.match(page,/方案标签对应真实数据点/);
  assert.match(css,/\.ov-management-goal/);
- assert.match(css,/\.ov-goal-milestones/);
+ assert.match(css,/\.ov-goal-solution-name/);
+ assert.match(css,/\.ov-goal-axis-date/);
  assert.match(css,/@media\(max-width:760px\)\{\.ov-management-goal-head/);
 });
 
@@ -336,14 +347,14 @@ test('flow canvas initializes its camera before cards can receive focus',async()
  const camera=canvas.indexOf('let camera=saved.sceneVersion');
  const cards=canvas.indexOf('cards.forEach(card=>');
  assert(camera>0&&cards>0&&camera<cards,'camera must exist before node focus and double-click handlers are attached');
- assert.match(canvas,/card\.addEventListener\('focusin',[^\n]*if\(mounted&&e\.target===card\)renderNodeTip/);
- assert(canvas.indexOf('mounted=true;syncSelection()')>cards,'canvas must become focus-interactive only after all cards are mounted');
+ assert.match(canvas,/card\.addEventListener\('focusin',e=>\{if\(e\.target===card\)renderNodeTip\(id\)\}\)/);
  assert.match(canvas,/const row=card\.querySelector\('\.rf-task-node-top'\);if\(row\)/);
  assert.match(canvas,/querySelector\('\[data-select-node\]'\)\?\.setAttribute/);
  assert.match(hierarchy,/if\(!\(direction\|\|slide\)\|\|reduced\)\{switching=true;main\.setAttribute\('aria-busy','true'\);requestAnimationFrame\(commit\);return\}/);
 });
 
 test('special task previews use an 80 percent workspace and flow TODOs remain editable',async()=>{
+ const page=await source('src/features/research-flow/page.js');
  const controller=await source('src/features/workflow/project-workspace-controller.js');
  const research=await source('src/features/workflow/research.js');
  const hierarchy=await source('src/features/research-flow/hierarchy-view.js');
@@ -357,14 +368,26 @@ test('special task previews use an 80 percent workspace and flow TODOs remain ed
  assert.match(hierarchy,/readOnly:!!workPackage\.demo/);
  assert.match(hierarchy,/onOpenEditor:id=>ctx\.editInternalNode/);
  assert.match(hierarchy,/onDeleteSelection:ids=>ctx\.deleteInternalNodes/);
+ assert.match(hierarchy,/editablePackage=id=>packageOptions\.tasks\.find\(task=>task\.id===id&&!task\.fileNode\)/);
+ assert.match(hierarchy,/nodeEditorInfo:id=>editablePackage\(id\)\?packageOptions\.nodeEditorInfo\?\.\(id\):null/);
+ assert.match(hierarchy,/const collaborationTarget=id=>\{const node=options\.tasks\.find\(n=>n\.id===id\)/);
+ assert.match(hierarchy,/onSaveNode:\(id,values\)=>\{if\(editablePackage\(id\)\)packageOptions\.onSaveNode\?\.\(id,values\)\}/);
+ assert.doesNotMatch(hierarchy,/data-v3-workbench|pv3-open-workbench|打开工作台/);
+ assert.match(canvas,/if\(gesture\|\|!popover\.hidden\)return;hoverTimer=setTimeout\(\(\)=>\{if\(!gesture&&hoverNode===id\)renderNodeTip\(id\)\},260\)/);
  assert.match(canvas,/data-full-node-delete>删除任务/);
+ assert.match(page,/nodeEditorInfo:projectEditorInfo/);
+ assert.match(page,/internalNodeEditorInfo,saveInternalNode,editInternalNode,deleteInternalNodes/);
+ assert.match(page,/rows:\(p,s,t\)=>\{let ws;try\{ws=JSON\.parse\(localStorage\.getItem\('synmat-task-workspaces'\)\|\|'\{\}'\)\[FlowHierarchyModel\.workspaceKey\(p,s,t\)\]\}catch\{\}return ws\?\.todos\?structuredClone\(ws\.todos\):null\}/);
+ assert.doesNotMatch(page,/rows:\(p,s,t\)=>[^\n]*TaskExperimentPanel\.entries/);
 });
 
-test('the only preview tab minimizes to a restorable workspace rail',async()=>{
+test('closing the last document returns to task assets while the optional preview rail remains restorable',async()=>{
  const research=await source('src/features/workflow/research.js');
  const css=await source('src/styles/workspace-shell.css');
  assert.match(research,/let previewMinimized=false/);
- assert.match(research,/if\(opened\.length===1\)\{previewMinimized=true;render\(\);return\}/);
+ assert.match(research,/function closePreviewTab\(name\)\{opened=opened\.filter\(item=>item!==name\);previewMinimized=false;if\(active===name\)active=opened\.at\(-1\)\|\|assetsTab/);
+ assert.match(research,/all\('\[data-close\]'\)\.forEach\(button=>button\.onclick=\(\)=>closePreviewTab\(button\.dataset\.close\)\)/);
+ assert.match(research,/function overview\(\)[^\n]*\$\{taskOperation\(\)\}/);
  assert.match(research,/data-restore-preview/);
  assert.match(research,/function restorePreview\(\)\{previewMinimized=false/);
  assert.match(research,/aria-label="工作区域已最小化"/);

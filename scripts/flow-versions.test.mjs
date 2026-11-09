@@ -17,7 +17,7 @@ test('V2 storage is seeded once and neither version overwrites the other',async(
  assert.equal(api.v2.getItem('synmat-flow-edits-v1'),'original');assert.equal(api.v2.getItem('unrelated'),null);storage.setItem('synmat-flow-edits-v1','v3 edit');api.seedV2();assert.equal(api.v2.getItem('synmat-flow-edits-v1'),'original');api.v2.setItem('synmat-flow-edits-v1','v2 edit');assert.equal(storage.getItem('synmat-flow-edits-v1'),'v3 edit');api.v2.removeItem('synmat-flow-edits-v1');assert.equal(storage.getItem('synmat-flow-edits-v1'),'v3 edit');
 });
 test('V2 backup, frozen dependencies and V3 entry are served together',async t=>{
- const server=createDevServer();server.listen(0,'127.0.0.1');await once(server,'listening');t.after(()=>new Promise(r=>{server.closeAllConnections();server.close(r)}));const base=`http://127.0.0.1:${server.address().port}`;
+ const server=createDevServer({enabled:false});server.listen(0,'127.0.0.1');await once(server,'listening');t.after(()=>new Promise(r=>{server.closeAllConnections();server.close(r)}));const base=`http://127.0.0.1:${server.address().port}`;
  const active=await(await fetch(base)).text();assert.match(active,/data-nav="流程V3"/);assert.match(active,/data-nav="工作流程V2"/);
  for(const path of ['/archives/workflow-v2/index.html','/archives/workflow-v2/src/features/research-flow/page.js','/archives/workflow-v2/src/styles/main.css','/archives/workflow-v2/src/workflow-version-storage.js','/archives/workflow-v2/assets/brand/synmatai-logo.png'])assert.equal((await fetch(base+path)).status,200,path);
  const frozen=await(await fetch(base+'/archives/workflow-v2/src/features/research-flow/page.js')).text();assert.match(frozen,/WorkflowV2Storage.getItem/);assert.doesNotMatch(frozen,/\blocalStorage\b/);

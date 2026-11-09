@@ -25,7 +25,7 @@
  <div class="workspace-label">工作空间</div>
  <nav aria-label="全局导航"><button data-nav="项目列表"><svg><use href="#grid"/></svg><span>项目列表</span></button><button data-nav="概览"><svg><use href="#phase-material"/></svg><span>项目概览</span></button><button data-nav="流程V3" aria-label="项目流程" title="项目流程 · 无限画布"><svg><use href="#flow"/></svg><span>项目流程</span></button><button class="active" data-nav="任务"><svg><use href="#workspace"/></svg><span>任务工作台</span><small>7</small></button><button data-nav="实验"><svg><use href="#flask"/></svg><span>实验工作台</span></button><button data-nav="资产"><svg><use href="#folder"/></svg><span>项目资产</span></button></nav>
  <details class="sidebar-archive"><summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/></svg><span>回收站</span><svg class="sidebar-archive-chevron" aria-hidden="true"><use href="#chevron"/></svg></summary><nav aria-label="回收站备用页面"><button data-nav="工作流程V2" aria-label="工作流程V2" title="工作流程V2 · 冻结备份"><svg><use href="#flow"/></svg><span>工作流程V2</span></button><button data-nav="流程" aria-label="项目流程（旧版）" title="项目流程（旧版）"><svg><use href="#flow"/></svg><span>旧版项目流程</span><small>6</small></button></nav></details>
- <div class="sidebar-bottom"><div class="connection"><span></span>工作空间已连接</div><button class="help-btn" id="help"><svg><use href="#help-icon"/></svg>演示指南</button><div class="profile"><span class="avatar">林</span><div><strong>林晓</strong><small>项目研究员</small></div><span class="profile-dots">···</span></div></div>
+ <div class="sidebar-bottom"><div class="connection"><span></span>工作空间已连接</div><button class="help-btn" id="help"><svg><use href="#help-icon"/></svg>演示指南</button><div class="profile"><span class="avatar">林</span><div><strong>林晓</strong><small>项目研究员</small></div><button class="profile-dots auth-logout" id="auth-logout" type="button" title="退出登录">退出</button></div></div>
 </aside>
 <div class="app">
  <header class="topbar"><div class="breadcrumbs"><span>项目空间</span><svg><use href="#chevron"/></svg><span data-project-name>防刮擦涂层优化</span><svg><use href="#chevron"/></svg><strong>研发 / 路线筛选 / 计算模拟</strong></div><button type="button" class="demo-badge" id="project-return-demo" title="演示返回项目后的进展汇报">交互演示</button><button class="icon-btn" id="export" aria-label="导出配置"><svg><use href="#download"/></svg></button></header>
@@ -60,6 +60,7 @@
 <script src="/src/features/projects/page.js"></script>
 <script src="/src/features/demo-guide/demo-guide.js"></script>
 <script src="/src/features/demo-guide/page-tour.js"></script>
+<script src="/src/auth-session.js"></script>
 </body></html>
 
 

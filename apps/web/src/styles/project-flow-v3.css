@@ -13,7 +13,6 @@
 .pv3-topbar .workspace-view-label{position:absolute;top:calc(100% + 8px);left:50%;display:block;min-width:44px;padding:5px 7px;border:1px solid #d9c8f4;border-radius:6px;background:#fff;color:#513578;box-shadow:0 6px 16px #4c31701f;font-size:11px;line-height:1.2;text-align:center;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%);transition:opacity .14s ease-out,visibility .14s ease-out}
 .pv3-topbar .workspace-view-button:hover .workspace-view-label,.pv3-topbar .workspace-view-button:focus-visible .workspace-view-label{opacity:1;visibility:visible}
 .project-v3 .pv3-main[aria-busy=true] .pv3-navigation{pointer-events:none}
-.pv3-open-workbench{position:absolute;right:108px;bottom:65px;z-index:9;min-height:30px;font-size:11px;padding:5px 9px;border-color:#e8def1;background:#faf8fded;color:#7f5ba6}
 .project-v3 .pv3-main .fc-bottom{left:calc(var(--pv3-agent-width) + 15px)!important;bottom:16px;max-width:calc(100% - var(--pv3-agent-width) - 250px);width:auto;z-index:8}
 .project-v3 .fc-bottom>p{display:none}.project-v3 .fc-zoom-controls{width:auto;gap:0;padding:5px 6px;border-radius:9px;background:#ffffffed}
 .project-v3 .fc-zoom-controls button{font-size:10px;padding-inline:6px}
@@ -63,7 +62,7 @@
 .pv3-boundary-files>button.pv3-expected-file{background:transparent;border:1px dashed #d9ccea;color:#b39bc9}
 .pv3-empty-files{font-size:15px;color:#c6b8d2;padding:9px 0}
 @media(max-width:1200px){.project-v3 .pv3-main{--pv3-agent-width:280px!important}.pv3-scene-count{display:none}.project-v3 .fc-zoom-controls [data-fc-layout]{display:none}}
-@media(max-width:800px){.project-v3 .pv3-main{--pv3-agent-width:240px!important;--pv3-boundary-width:52px}.pv3-topbar{left:calc(var(--pv3-agent-width) + 8px);right:8px}.pv3-navigation{margin-left:3px;padding-left:5px}.pv3-workspace-switch{margin-right:4px;padding-right:5px}.pv3-workspace-state-switch button,.pv3-view-tabs>button{width:30px;height:34px}.pv3-workspace-state-switch button svg,.pv3-view-tabs>button svg{width:16px;height:16px}.pv3-open-workbench{display:none}.pv3-context-path{font-size:10px}.project-v3 .fc-zoom-controls [data-fc-current]{display:none}.project-v3 .fc-commandbar>button{width:27px;height:29px}.project-v3 .fc-bottom{max-width:calc(100% - var(--pv3-agent-width) - 175px)}}
+@media(max-width:800px){.project-v3 .pv3-main{--pv3-agent-width:240px!important;--pv3-boundary-width:52px}.pv3-topbar{left:calc(var(--pv3-agent-width) + 8px);right:8px}.pv3-navigation{margin-left:3px;padding-left:5px}.pv3-workspace-switch{margin-right:4px;padding-right:5px}.pv3-workspace-state-switch button,.pv3-view-tabs>button{width:30px;height:34px}.pv3-workspace-state-switch button svg,.pv3-view-tabs>button svg{width:16px;height:16px}.pv3-context-path{font-size:10px}.project-v3 .fc-zoom-controls [data-fc-current]{display:none}.project-v3 .fc-commandbar>button{width:27px;height:29px}.project-v3 .fc-bottom{max-width:calc(100% - var(--pv3-agent-width) - 175px)}}
 @media(prefers-reduced-motion:reduce){.pv3-boundary{transition:none}}
 
 @media(prefers-reduced-motion:reduce){.pv3-view-tabs>button{transition:none}}
