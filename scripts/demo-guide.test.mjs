@@ -41,9 +41,9 @@ test('global demo guide is loaded by the app and uses hierarchical markdown cont
  assert.match(script,/label:'任务工作台'/);
  assert.doesNotMatch(script,/label:'任务工作台 · '/);
  assert.match(styles,/\.demo-guide\.is-minimized/);
- for(const id of ['page-projects','page-overview','page-experiments','page-assets','workbench-P1T1-TODO-001','workbench-P1T2-TODO-001','workbench-P1T3-TODO-001','workbench-P1T4-TODO-001','workbench-T11-TODO-002','workbench-T20-TODO-001','workbench-default','flow-global','flow-stage-S1','flow-stage-S2','flow-package-default','default'])assert.match(content,new RegExp(`## \\[${id}\\]`));
- assert.match(content,/scope: workbench\s+key: T11-TODO-002/);
- assert.match(content,/scope: workbench\s+key: P1T2-TODO-001/);
+ for(const id of ['page-projects','page-overview','page-experiments','page-assets','workbench-T11-TODO-001','workbench-T21-TODO-001','workbench-T31-TODO-001','workbench-T40-TODO-001','workbench-default','flow-global','flow-stage-S1','flow-stage-S2','flow-stage-S4','flow-package-default','default'])assert.match(content,new RegExp(`## \\[${id}\\]`));
+ assert.match(content,/scope: workbench\s+key: T21-TODO-001/);
+ assert.match(content,/scope: workbench\s+key: T40-TODO-001/);
  assert.doesNotMatch(content,/scope: workbench\s+key: [^\n]*-\*/);
  assert.match(content,/scope: flow-stage\s+key: S1/);
  assert.match(content,/scope: flow-package\s+key: \*/);

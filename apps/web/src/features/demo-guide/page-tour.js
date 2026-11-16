@@ -5,8 +5,11 @@ const PageTour=(()=>{
   conversationToggle:'.research-desk:not(.hidden) [data-workspace-conversation-toggle], #research-flow-page:not(.hidden) [data-workspace-conversation-toggle], .workbench:not(.hidden) [data-workspace-conversation-toggle]',
   conversation:'.research-desk:not(.hidden) .research-chat, #research-flow-page:not(.hidden) .rf-copilot, .workbench:not(.hidden) .copilot',
   workspace:'.research-desk:not(.hidden) .research-preview, #research-flow-page:not(.hidden) .pv3-main .fc-viewport, .workbench:not(.hidden) .right-workspace',
-  tabs:'.research-desk:not(.hidden) [role="tablist"][aria-label="已打开文档"], .research-desk:not(.hidden) .research-tabs',
-  switcher:'.research-desk:not(.hidden) [data-project-workspace-view], #research-flow-page:not(.hidden) [data-project-workspace-view]',
+  tabs:'.research-desk:not(.hidden) [role="tablist"][aria-label="已打开工作内容"], .research-desk:not(.hidden) .research-tabs',
+  chief:'.workspace-conversation-rail>.workspace-project-chief',
+  conversations:'.workspace-conversation-rail',
+  projectSwitch:'.sidebar [data-nav="任务"]',
+  flowHistory:'#research-flow-page:not(.hidden) .pv3-view-history',
   flowTopbar:'#research-flow-page:not(.hidden) .pv3-overview-slot',
   flowLevels:'#research-flow-page:not(.hidden) .pv3-navigation',
   flowCanvas:'#research-flow-page:not(.hidden) .pv3-main .fc-viewport',
@@ -22,12 +25,12 @@ const PageTour=(()=>{
  function project(){return typeof ProjectStore!=='undefined'?ProjectStore.active?.():null}
  function storageKey(){return storagePrefix+(project()?.id||'default')}
  function visible(selector){for(const node of document.querySelectorAll(selector)){const rect=node.getBoundingClientRect();if(rect.width>24&&rect.height>24&&getComputedStyle(node).visibility!=='hidden')return node}return null}
- function targetOf(name){const node=visible(selectors[name]);if(name==='switcher'&&node)return node.closest('.project-workspace-view-switch,.pv3-workspace-state-switch,.workspace-view-switch')||node;return node}
+ function targetOf(name){return visible(selectors[name])}
  function waitFor(check,attempts=30){return new Promise(resolve=>{const tick=()=>{const value=check();if(value||attempts--<=0)return resolve(value||null);setTimeout(tick,80)};tick()})}
  async function ensureWorkspace(mode,level=''){
   let flow=visible('#research-flow-page:not(.hidden) .pv3-main'),desk=visible('.research-desk:not(.hidden)');
-  if(mode==='flow'&&!flow){visible('[data-project-workspace-view="flow"]')?.click();flow=await waitFor(()=>visible('#research-flow-page:not(.hidden) .pv3-main'))}
-  if(mode==='task'&&!desk){visible('[data-project-workspace-view="task"]')?.click();desk=await waitFor(()=>visible('.research-desk:not(.hidden)'))}
+  if(mode==='flow'&&!flow){(visible('.workspace-project-chief')||document.querySelector('[data-nav="流程V3"]'))?.click();flow=await waitFor(()=>visible('#research-flow-page:not(.hidden) .pv3-main'))}
+  if(mode==='task'&&!desk){visible('[data-nav="任务"]')?.click();desk=await waitFor(()=>visible('.research-desk:not(.hidden)'))}
   if(mode==='flow'&&level&&flow?.dataset.hierarchyLevel!==level){
    if(level==='internal'&&flow?.dataset.hierarchyLevel==='packages'){const packages=[...flow.querySelectorAll('.fc-node:not(.pv3-gate-card):not(.pv3-file-card)')],editable=packages.find(node=>!/计算模拟/.test(node.textContent||''))||packages[0];editable?.click()}
    flow.querySelector(`[data-v3-view="${level}"]`)?.click();flow=await waitFor(()=>{const current=visible('#research-flow-page:not(.hidden) .pv3-main');return current?.dataset.hierarchyLevel===level?current:null})
@@ -36,14 +39,18 @@ const PageTour=(()=>{
  }
  function eligible(){const item=project(),route=location.hash.split('?')[0];return !!item&&route!=='#projects'&&item.protected===true}
  function stepSet(){
-  const common=[{id:'navigation',target:()=>targetOf('navigation'),placement:'right',title:'最左侧是主菜单栏',text:'从这里进入项目列表、项目概览、项目工作区、实验工作台和项目资产。图标悬停时会显示菜单名称。'}];
+  const common=[{id:'navigation',target:()=>targetOf('navigation'),placement:'right',title:'最左侧是主菜单栏',text:'主菜单提供项目列表、项目工作区、实验工作台和审批中心。项目概览从项目列表进入，包含总览、项目资产和项目管理。'}];
+  if(location.hash==='#management')return [...common,{id:'management-tabs',target:()=>visible('#approval-prototype-page .project-overview-tabs'),placement:'bottom',title:'项目概览中的三个页签',text:'总览查看项目进展，项目资产查找文件，项目管理配置成员角色和审批规则。'},{id:'members',target:()=>visible('.ap-management>section:first-child'),placement:'right',title:'指定项目成员与审批角色',text:'为项目负责人、Leader、+1、+2指定人员。成员设置用于本地审批演示。'},{id:'rules',target:()=>visible('.ap-management>section:nth-child(2)'),placement:'left',title:'按类别与层级配置审批',text:'流程变更、工作流转、项目审批分别配置四层角色；保存后对新申请生效。部分层级尚只提供规则配置。'}];
+  if(location.hash==='#approvals')return [...common,{id:'approval-identity',target:()=>visible('#ap-actor'),placement:'left',title:'切换演示审批人',text:'默认林晓有待审记录。切换张三、王宁或陈妍，可体验逐级审批。'},{id:'approval-list',target:()=>visible('.ap-requests'),placement:'right',title:'找到需要你决定的事项',text:'切换待我审批、我已处理或我发起的。点击申请查看项目、变更原因与处理记录。'},{id:'approval-detail',target:()=>visible('.ap-detail'),placement:'left',title:'查看上下文，再通过或驳回',text:'详情可预览项目流程、进入关联工作台并返回。驳回需填写原因；标注示例的申请仅更新演示审批记录。'}];
   if(targetOf('conversation')&&targetOf('workspace'))return [...common,
+   {id:'project-switch',target:()=>targetOf('projectSwitch'),placement:'right',title:'悬停主菜单可快捷切换项目',text:'工作台和工作流中，悬停项目工作区图标可选择其他项目，切换后进入目标项目当前工作台。'},
    {id:'conversation-toggle',prepare:()=>ensureWorkspace('task'),target:()=>targetOf('conversationToggle'),placement:'bottom',title:'切换项目内对话列表',text:'点击这个图标可展开或收起对话列表；列表收起时，将鼠标悬停在图标上仍可快速预览和切换对话。'},
+   {id:'chief',prepare:()=>ensureWorkspace('task'),target:()=>targetOf('chief'),placement:'right',title:'SuperAgent项目总工统筹整个项目',text:'固定入口用于项目级讨论。选择项目、阶段或工作包的 Supervisor 对话时，右侧打开对应工作流；选择任务对话则进入任务工作台。'},
    {id:'conversation',prepare:()=>ensureWorkspace('task'),target:()=>targetOf('conversation'),placement:'right',title:'Agent对话栏，不同任务会有不同类型的Agent接受任务，完成工作',text:'左侧保留当前任务的完整对话。输入背景、补充资料或确认结果，任务上下文会随节点一起切换。'},
-   {id:'workspace',prepare:()=>ensureWorkspace('task'),target:()=>targetOf('workspace'),placement:'left',title:'工作预览区，展示任务或者预览文件',text:'右侧根据任务类型显示流程画布、文档、ELN 或模拟计算。'},
-   {id:'tabs',prepare:()=>ensureWorkspace('task'),target:()=>targetOf('tabs'),placement:'bottom',title:'多个成果通过页签并行打开',text:'文档、ELN 和模拟工作台会作为独立页签保留。点击页签切换内容，关闭最后一个页签会将工作区域收起为图标。'},
-   {id:'switcher',prepare:()=>ensureWorkspace('task'),target:()=>targetOf('switcher'),placement:'bottom',title:'在工作台与项目流程间切换',text:'工作台聚焦当前任务，项目流程查看全局依赖。下一步将自动进入项目流程继续介绍。'},
+   {id:'workspace',prepare:()=>ensureWorkspace('task'),target:()=>targetOf('workspace'),placement:'left',title:'工作预览区，展示任务或者预览文件',text:'任务工作台默认展示本对话产生的资产；实验任务打开 ELN，模拟任务打开模拟工作台。流程画布随 Supervisor 对话展示。'},
+   {id:'tabs',prepare:()=>ensureWorkspace('task'),target:()=>targetOf('tabs'),placement:'bottom',title:'多个成果通过页签并行打开',text:'节点资产是默认且不可关闭的页签。文档、ELN 和模拟工作台单独打开；关闭专业页签后可回到节点资产，继续完成任务。'},
    {id:'flow-topbar',flow:true,prepare:()=>ensureWorkspace('flow','stages'),target:()=>targetOf('flowTopbar'),placement:'bottom',title:'阶段导航，单击节点进入，双击向上返回',text:'这里概览项目阶段和当前所在节点，可直接选择阶段，也可双击当前层级图标返回上一层流程。'},
+   {id:'flow-history',flow:true,prepare:()=>ensureWorkspace('flow','stages'),target:()=>targetOf('flowHistory'),placement:'bottom',title:'用后退、前进恢复浏览位置',text:'记录视图下钻与流程对话切换位置。后退、前进只恢复视图，不撤销节点编辑或审批结果。'},
    {id:'flow-levels',flow:true,prepare:()=>ensureWorkspace('flow','stages'),target:()=>targetOf('flowLevels'),placement:'left',title:'切换全局、阶段与任务视图',text:'全局查看项目阶段，阶段查看工作包，任务查看包内 TODO、文件与依赖。'},
    {id:'flow-canvas',flow:true,prepare:()=>ensureWorkspace('flow','stages'),target:()=>targetOf('flowCanvas'),placement:'left',title:'项目流程画布，自由管理流程，安排Agent或人工完成的任务',text:'画布中的节点、文件与连线共同表达研发流程。可缩放、平移和选择节点，不把文件误当成任务。'},
    {id:'flow-input',flow:true,prepare:()=>ensureWorkspace('flow','packages'),target:()=>targetOf('flowInput'),placement:'right',title:'左侧集中展示上游输入',text:'进入阶段或任务层级后，左侧显示上游节点及其输入文件；可打开文件，支持的文件还可拖入工作包建立引用。'},
@@ -79,7 +86,7 @@ const PageTour=(()=>{
   root.dataset.step=steps[index].id;root.querySelector('[data-tour-progress]').textContent=`${index+1} / ${steps.length}`;root.querySelector('[data-tour-title]').textContent=steps[index].title;root.querySelector('[data-tour-text]').textContent=steps[index].text;root.querySelector('[data-tour-back]').disabled=index===0;root.querySelector('[data-tour-next-label]').textContent=index===steps.length-1?'开始探索':'下一步';root.classList.remove('is-changing');void root.offsetWidth;root.classList.add('is-changing');layout();root.querySelector('[data-tour-next]').focus({preventScroll:true})
  }
  function begin(force=false){
-  clearTimeout(autoTimer);const key=storageKey();if(root||!eligible()||(!force&&shownProjects.has(key)))return false;shownProjects.add(key);let attempts=0;
+  clearTimeout(autoTimer);const key=storageKey();if(document.body.classList.contains('approval-surface')&&!force||root||!eligible()||(!force&&shownProjects.has(key)))return false;shownProjects.add(key);let attempts=0;
   const ready=()=>{steps=stepSet().filter(step=>step.flow||step.prepare||step.target());if(steps.length<2&&attempts++<20){autoTimer=setTimeout(ready,150);return}if(!steps.length){shownProjects.delete(key);return}previousFocus=document.activeElement;root=create();observer=new MutationObserver(records=>{if(records.some(record=>!record.target.closest?.('.page-tour')))scheduleLayout()});observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','hidden']});addEventListener('resize',scheduleLayout);addEventListener('scroll',scheduleLayout,true);document.addEventListener('keydown',onKey,true);show(0)};ready();return true
  }
  function finish(){if(!root)return;observer?.disconnect();observer=null;removeEventListener('resize',scheduleLayout);removeEventListener('scroll',scheduleLayout,true);document.removeEventListener('keydown',onKey,true);cancelAnimationFrame(frame);frame=0;root.remove();root=null;target=null;steps=[];previousFocus?.focus?.({preventScroll:true})}

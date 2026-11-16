@@ -17,7 +17,7 @@ const TaskCanvasModel=(()=>{
   const tasks=patterns.map(re=>rows.find(r=>re.test(r.name)));
   if(tasks.some(t=>!t))return true;
   tasks.slice(1).forEach((t,i)=>state.edges.push([tasks[i].id,t.id,'','dependency',{fromPort:i===1?'bottom':i===2?'left':'right',toPort:i===1?'top':i===2?'right':'left'}]));
-  for(const [name,target] of [['需求确认纪要.md',0],['涂层性能指标.csv',0]])if(catalog.includes(name))state.edges.push([inputId(name),tasks[target].id,'','dependency']);
+  for(const [name,target] of [['导热凝胶项目基础信息.md',0],['四峰级配与粉体前处理记录.csv',0]])if(catalog.includes(name))state.edges.push([inputId(name),tasks[target].id,'','dependency']);
   // This already-existing example document is displayed as the report step's deliverable.
   if(catalog.includes('技术调研报告.md')){state.inputNames=state.inputNames.filter(n=>n!=='技术调研报告.md');artifact(state,tasks[3].id,'技术调研报告.md')}
   return true;

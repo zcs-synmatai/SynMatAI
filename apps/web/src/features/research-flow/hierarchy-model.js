@@ -1,7 +1,7 @@
 /* V3 navigation projections. These views never rewrite execution dependencies. */
 const FlowHierarchyModel=(()=>{
  const phases=['项目立项','研发','量产'];
- const workspaceSub={S1:'实施条件验证',S2:'路线筛选',S3:'因子筛选',S4:'工艺窗口优化',S5:'耐候与老化',S6:'客户验证'};
+ const workspaceSub={S0:'需求与资源对齐',S1:'材料与级配',S2:'小试与混炼',S3:'固化与薄层',S4:'热学与可靠性',S5:'中试与资格',S6:'质量与监督'};
  function adjacent(views,phase,stage){const chain=phases.flatMap(p=>views[p].stages.map(s=>({...s,phase:p}))),index=chain.findIndex(s=>s.phase===phase&&s.id===stage);return {before:chain[index-1]||null,after:chain[index+1]||null,current:chain[index]}}
  function boundaryPackage(views,phase,stage,side){let next=adjacent(views,phase,stage)[side];while(next){const tasks=views[next.phase].tasks.filter(t=>t.stage===next.id&&!t.fileNode);if(tasks.length)return {...tasks[side==='before'?tasks.length-1:0],phase:next.phase,stageId:next.id};next=adjacent(views,next.phase,next.id)[side]}return null}
  function requirements(stage){return (stage?.deliverables||'').split(/[；;]/).map(s=>s.trim().replace(/^D\d+\s*/,'' )).filter(Boolean)}

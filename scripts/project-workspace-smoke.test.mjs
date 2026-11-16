@@ -32,7 +32,7 @@ function workspaceRuntime({viewport=1280,conversationCollapsed=false}={}){
  return {context,stored,classes,style,breadcrumb,renderedBreadcrumb,resizer,mediaListeners,dispatched};
 }
 
-test('workspace scripts load before their consumers and expose only two primary views',async()=>{
+test('workspace scripts load before their consumers and conversations own the active view',async()=>{
  const html=await source('index.html');
  assert.match(html,/<symbol id="workspace"/);
  assert.match(html,/data-nav="任务"><svg><use href="#workspace"/);
@@ -41,10 +41,6 @@ test('workspace scripts load before their consumers and expose only two primary 
  assert(html.indexOf(components)>0&&html.indexOf(controller)>html.indexOf(components)&&html.indexOf(consumer)>html.indexOf(controller));
  const runtime=workspaceRuntime();
  vm.runInContext(await source('src/features/workflow/project-workspace-components.js'),runtime.context);
- const markup=runtime.context.ProjectWorkspaceComponents.modeSwitch({mode:'task'});
- assert.equal((markup.match(/<button/g)||[]).length,2);
- assert.match(markup,/>工作台</);assert.match(markup,/>项目流程</);assert.doesNotMatch(markup,/工作布局|任务画布/);
- assert.match(markup,/workspace-view-switch/);assert.match(markup,/workspace-view-button/);assert.match(markup,/href="#workspace"/);
  const toggle=runtime.context.ProjectWorkspaceComponents.conversationToggle();
  assert.match(toggle,/data-workspace-conversation-toggle/);assert.match(toggle,/aria-expanded="true"/);assert.match(toggle,/workspace-conversation-state/);
  const research=await source('src/features/workflow/research.js');
@@ -63,13 +59,17 @@ test('workspace scripts load before their consumers and expose only two primary 
  assert.match(research,/dock!==['"]assets['"].*closest\(['"]\.research-dock,\[data-dock\]/);
  assert.match(research,/class="research-tab-label"/);assert.match(research,/class="research-tab-close"/);
  assert.match(research,/class="research-agent-name"/);assert.match(research,/class="research-task-name"/);
+ assert.doesNotMatch(research,/workspaceSwitcherMarkup/);
+ assert.doesNotMatch(research,/data-project-workspace-view/);
+ assert.match(research,/id==='workspace'\|\|id===stageConversationId\(\)/);
+ assert.match(research,/synmat:open-project-flow-context/);
 });
 
 test('only the protected example project receives a replayable page tour',async()=>{
  const html=await source('index.html'),tour=await source('src/features/demo-guide/page-tour.js'),guide=await source('src/features/demo-guide/demo-guide.js'),css=await source('src/styles/page-tour.css');
  assert.match(html,/features\/demo-guide\/page-tour\.js/);assert(html.indexOf('demo-guide.js')<html.indexOf('page-tour.js'));
  assert.match(tour,/synmat-page-tour-v1:/);assert.match(tour,/item\.protected===true/);assert.doesNotMatch(tour,/item\.scenario==='guided-demo'\|\|item\.protected/);assert.match(tour,/const shownProjects=new Set\(\)/);assert.match(tour,/shownProjects\.has\(key\)/);assert.doesNotMatch(tour,/localStorage\.getItem\(storageKey\(\)\)===['"]done['"]/);assert.doesNotMatch(tour,/localStorage\.setItem\(storageKey\(\),['"]done['"]\)/);assert.match(tour,/synmat:project-registry-updated/);assert.match(tour,/data-tour-back/);assert.match(tour,/data-tour-next/);assert.match(tour,/event\.key==='Escape'/);assert.match(tour,/event\.key==='ArrowRight'/);
- assert.match(tour,/最左侧是主菜单栏/);assert.match(tour,/conversationToggle/);assert.match(tour,/切换项目内对话列表/);assert.match(tour,/Agent对话栏，不同任务会有不同类型的Agent接受任务，完成工作/);assert.match(tour,/工作预览区，展示任务或者预览文件/);assert.match(tour,/工作台与项目流程间切换/);assert.match(guide,/data-guide-tour/);assert.match(guide,/activeProject\?\.protected!==true/);assert.match(guide,/synmat:start-page-tour/);
+ assert.match(tour,/最左侧是主菜单栏/);assert.match(tour,/conversationToggle/);assert.match(tour,/切换项目内对话列表/);assert.match(tour,/Agent对话栏，不同任务会有不同类型的Agent接受任务，完成工作/);assert.match(tour,/工作预览区，展示任务或者预览文件/);assert.doesNotMatch(tour,/工作台与项目流程间切换/);assert.match(guide,/data-guide-tour/);assert.match(guide,/activeProject\?\.protected!==true/);assert.match(guide,/synmat:start-page-tour/);
  for(const id of ['tabs','flow-topbar','flow-levels','flow-canvas','flow-input','flow-output','flow-double-click','agent-palette'])assert.match(tour,new RegExp(`id:'${id}'`));
  assert.match(tour,/ensureWorkspace\('flow','stages'\)/);assert.match(tour,/ensureWorkspace\('flow','packages'\)/);assert.match(tour,/ensureWorkspace\('flow','internal'\)/);
  assert.match(tour,/level==='internal'.*dataset\.hierarchyLevel==='packages'/);assert.match(tour,/!\/计算模拟\/\.test/);
@@ -213,10 +213,13 @@ test('project flow V3 reuses the conversation shell and one topbar across every 
  const css=await source('src/styles/workspace-shell.css');
  const flowCss=await source('src/styles/project-flow-v3.css');
  assert.match(page,/ProjectWorkspaceComponents\.conversationRail/);
- assert.match(page,/enteringFlowFromTask=canvasMode&&window\.ProjectWorkspace\?\.mode==='task'/);
- assert.match(page,/if\(enteringFlowFromTask\)ProjectWorkspaceController\.balanceFlowColumns\(\)/);
+ assert.doesNotMatch(page,/enteringFlowFromTask/);
+ assert.doesNotMatch(page,/ProjectWorkspaceController\.balanceFlowColumns\(\)/);
  assert.match(page,/flowConversationId/);
  assert.match(page,/mountFlowWorkspaceChat/);
+ assert.match(page,/function flowDelegationMarkup\(row\)/);
+ assert.match(page,/已调用/);
+ assert.match(page,/未调用真实 Agent/);
  assert.match(page,/querySelector\('\.rf-chat-context'\)\?\.remove\(\)/);
  assert.match(page,/normalizeV3Navigation/);
  assert.match(hierarchy,/const activeId=ids\.length===1\?ids\[0\]:stageCurrentId/);
@@ -225,9 +228,9 @@ test('project flow V3 reuses the conversation shell and one topbar across every 
  assert.match(canvas,/synmat:workspace-width-change/);
  assert.match(canvas,/workspaceFitFrame=requestAnimationFrame\(\(\)=>\{workspaceFitFrame=0;if\(!destroyed\)fit\(\)\}\)/);
  assert.match(page,/chatCollapsed=false/);
- assert.match(hierarchy,/pv3-workspace-switch/);
- assert.match(hierarchy,/data-project-workspace-view/);
- assert.match(hierarchy,/pv3-workspace-state-switch/);
+ assert.doesNotMatch(hierarchy,/pv3-workspace-switch/);
+ assert.doesNotMatch(hierarchy,/data-project-workspace-view/);
+ assert.doesNotMatch(hierarchy,/pv3-workspace-state-switch/);
  assert.match(css,/grid-template-columns:var\(--workspace-conversation-width\) var\(--workspace-chat-width\) var\(--workspace-divider\) minmax\(0,1fr\)!important/);
  assert.match(css,/workspace-conversations-overlay-open\.flow-canvas-active/);
  assert.match(css,/body\.flow-canvas-active \.topbar\{display:none\}/);
@@ -264,7 +267,7 @@ test('flow task handoff always re-enters the primary task workspace',async()=>{
  assert.match(page,/classList\.add\('task-workspace-active'\)/);
  assert.match(page,/openAction:previewType\?'special-preview':action==='file'\?'document':'conversation-assets'/);
  assert.match(page,/enterNodeWorkspace\(id,\{openAction:'conversation-assets'\}\)/);
- assert.match(research,/function openConversationAssets\(id\)\{previewMinimized=false;opened=\[\];active='overview'/);
+ assert.match(research,/function openConversationAssets\(id\)\{previewMinimized=false;opened=\[assetsTab\];active=assetsTab/);
  assert.match(research,/flowWorkspace\.openAction==='conversation-assets'/);
 });
 
@@ -337,7 +340,7 @@ test('stage package and task collaboration share the workbench with scoped asset
 
 test('entering a package focuses its first active TODO by default',async()=>{
  const [flow,lifecycle]=await Promise.all([source('src/features/research-flow/page.js'),source('src/features/research-flow/demo-lifecycle.js')]);
- assert.match(flow,/autoFocusFirstTask:e\.detail\.autoFocusFirstTask!==false/);
+ assert.match(flow,/autoFocusFirstTask:detail\.autoFocusFirstTask!==false/);
  assert.match(lifecycle,/nodeId:'P1T2',autoFocusFirstTask:true/);
 });
 
@@ -381,11 +384,14 @@ test('special task previews use an 80 percent workspace and flow TODOs remain ed
  assert.doesNotMatch(page,/rows:\(p,s,t\)=>[^\n]*TaskExperimentPanel\.entries/);
 });
 
-test('closing the last document returns to task assets while the optional preview rail remains restorable',async()=>{
+test('node assets remain as a fixed preview tab while document tabs can close',async()=>{
  const research=await source('src/features/workflow/research.js');
  const css=await source('src/styles/workspace-shell.css');
  assert.match(research,/let previewMinimized=false/);
- assert.match(research,/function closePreviewTab\(name\)\{opened=opened\.filter\(item=>item!==name\);previewMinimized=false;if\(active===name\)active=opened\.at\(-1\)\|\|assetsTab/);
+ assert.match(research,/active=assetsTab, opened=\[assetsTab\]/);
+ assert.match(research,/function closePreviewTab\(name\)\{if\(name===assetsTab\)return;opened=opened\.filter\(item=>item!==name\);previewMinimized=false;if\(active===name\)active=opened\.at\(-1\)\|\|assetsTab/);
+ assert.match(research,/n===assetsTab\?'':`<button class="research-tab-close"/);
+ assert.match(research,/opened=\[assetsTab\];active=assetsTab/);
  assert.match(research,/all\('\[data-close\]'\)\.forEach\(button=>button\.onclick=\(\)=>closePreviewTab\(button\.dataset\.close\)\)/);
  assert.match(research,/function overview\(\)[^\n]*\$\{taskOperation\(\)\}/);
  assert.match(research,/data-restore-preview/);
@@ -394,6 +400,9 @@ test('closing the last document returns to task assets while the optional previe
  assert.match(css,/\.research-desk\.preview-minimized\{grid-template-columns:[^}]*54px/);
  assert.match(css,/\.research-preview-minimized\{[^}]*align-items:center;justify-content:flex-start;[^}]*width:54px/);
  assert.match(css,/\.research-preview-restore/);
+ assert.match(css,/--workspace-title-row-height:54px/);
+ assert.match(css,/\.research-panel-head\{height:var\(--workspace-title-row-height\)/);
+ assert.match(css,/\.workspace-preview-head\{height:var\(--workspace-title-row-height\)/);
 });
 
 test('new work packages start with one default TODO and the node editor stays readable',async()=>{
@@ -484,4 +493,116 @@ test('task flow offers draggable Agent creation and highlights active Agent work
  assert.match(css,/animation:agent-working-spin/);
  assert.match(css,/\.pv3-agent-palette\{left:calc\(var\(--pv3-agent-width,0px\) \+ var\(--pv3-boundary-inset,12px\) \+ var\(--pv3-boundary-width,56px\) \+ var\(--pv3-boundary-gap,12px\)\);top:calc\(var\(--pv3-top-clearance,104px\) \+ 6px\)/);
  assert.match(hierarchy,/agentToolGap=level==='internal'\?48:0/);
+});
+
+test('project overview is a secondary page and project rows open the workbench',async()=>{
+ const [index,projects,overview,tour]=await Promise.all([
+  source('index.html'),
+  source('src/features/projects/page.js'),
+  source('src/features/project-overview/page.js'),
+  source('src/features/demo-guide/page-tour.js')
+ ]);
+ assert.doesNotMatch(index,/data-nav="概览"/);
+ assert.match(projects,/data-project-open-workbench role="link" tabindex="0"/);
+ assert.match(projects,/data-project-action="overview"/);
+ assert.match(projects,/class="btn primary" data-project-action="workbench"[^>]*>工作台<\/button>/);
+ assert.doesNotMatch(projects,/data-project-action="flow"/);
+ assert.match(projects,/openDestination\(project,'workbench'\)/);
+ assert.match(projects,/synmat:open-project-overview/);
+ assert.match(overview,/synmat:open-project-overview/);
+ assert.match(overview,/b\.dataset\.nav==='项目列表'/);
+ assert.doesNotMatch(tour,/项目列表、项目概览/);
+});
+
+test('Supervisor conversations open workflow views while task Agent conversations open workbenches',async()=>{
+ const [flow,research,hierarchy,canvas,components,styles,tour]=await Promise.all([
+  source('src/features/research-flow/page.js'),
+  source('src/features/workflow/research.js'),
+  source('src/features/research-flow/hierarchy-view.js'),
+  source('src/features/research-flow/canvas-view.js'),
+  source('src/features/workflow/project-workspace-components.js'),
+  source('src/styles/workspace-shell.css'),
+  source('src/features/demo-guide/page-tour.js')
+ ]);
+ assert.match(flow,/Supervisor Agent · 阶段工作流/);
+ assert.match(flow,/Supervisor Agent · 工作包/);
+ assert.match(flow,/kind:'task'/);
+ assert.match(flow,/if\(row\.kind==='task'\)/);
+ assert.match(flow,/createFlowConversation/);
+ assert.match(flow,/window\.ProjectConversationCatalog/);
+ assert.match(flow,/rf-new-conversation-start/);
+ assert.match(flow,/level:c\.packageId\?'internal':'packages'/);
+ assert.match(research,/ProjectConversationCatalog\?\.rows/);
+ assert.match(research,/ProjectConversationCatalog\.open\(id\)/);
+ assert.match(hierarchy,/selectionChatLabel:'新建对话'/);
+ assert.match(canvas,/o\.onCreateConversation\|\|o\.onAddToChat/);
+ assert.match(components,/data-conversation-search/);
+ assert.match(components,/data-conversation-search-toggle/);
+ assert.match(components,/data-conversation-new/);
+ assert.match(components,/synmat:new-flow-conversation/);
+ assert.match(components,/data-workspace-project/);
+ assert.match(components,/bindConversationSearch/);
+ assert.match(flow,/createBlankFlowConversation/);
+ assert.match(flow,/document\.addEventListener\('synmat:new-flow-conversation'/);
+ assert.match(styles,/\.rf-new-conversation-start/);
+ assert.doesNotMatch(research,/data-project-workspace-view/);
+ assert.doesNotMatch(hierarchy,/data-project-workspace-view/);
+ assert.doesNotMatch(tour,/id:'switcher'/);
+});
+
+test('conversation rail icons distinguish workflow conversations from task workspaces',async()=>{
+ const page=await source('src/features/research-flow/page.js'),research=await source('src/features/workflow/research.js'),index=await source('index.html');
+ assert.match(page,/meta:pack\.id\+' · Supervisor Agent · 工作包',icon:'flow',kind:'workflow'/);
+ assert.match(page,/icon:'task-tools',kind:'task'/);
+ assert.match(page,/icon:'flow',kind:'workflow-chat'/);
+ assert.match(research,/meta:'Supervisor Agent · 工作包',icon:'flow'/);
+ assert.match(research,/icon:'task-tools'/);
+ assert.match(index,/symbol id="task-tools"/);
+ assert.doesNotMatch(research,/id="research-conversation-back"/);
+});
+
+test('flow boundary rails label upstream inputs and downstream outputs',async()=>{
+ const hierarchy=await source('src/features/research-flow/hierarchy-view.js');
+ assert.match(hierarchy,/上游输入/);
+ assert.match(hierarchy,/向下输出/);
+});
+
+test('conversation rail shows the project name and experiment entries reuse the task workbench ELN',async()=>{
+ const [components,experiments,flow,research]=await Promise.all([
+  source('src/features/workflow/project-workspace-components.js'),
+  source('src/features/experiments/page.js'),
+  source('src/features/research-flow/page.js'),
+  source('src/features/workflow/research.js')
+ ]);
+ assert.match(components,/ProjectStore\.active\?\.\(\)\?\.name/);
+ assert.match(components,/<span title="\$\{safe\(projectTitle\)\}">\$\{safe\(projectTitle\)\}<\/span>/);
+ assert.doesNotMatch(experiments,/\$\{id\?\(current\(\)\?eln\(current\(\)/);
+ assert.match(experiments,/function workspaceTarget\(e\)/);
+ assert.match(experiments,/previewType:'experiment'/);
+ assert.match(experiments,/internalNode:\{id:target\.taskId/);
+ assert.match(experiments,/legacyId\)setTimeout\(\(\)=>openExperiment\(legacyId\),0\)/);
+ assert.match(flow,/for\(const key of \['openAction','previewType','internalNode','experimentId'\]\)/);
+ assert.match(research,/opened=\[assetsTab,elnTab\]/);
+});
+
+test('project overview and project assets share one stable header and tab toolbar',async()=>{
+ const [shell,overview,assets,index,styles]=await Promise.all([
+  source('src/features/project-overview/shell.js'),
+  source('src/features/project-overview/page.js'),
+  source('src/features/project-assets/page.js'),
+  source('index.html'),
+  source('src/styles/project-overview.css')
+ ]);
+ assert.match(index,/project-overview\/shell\.js/);
+ assert.match(shell,/function projectHeader\(project\)/);
+ assert.match(shell,/function navigation\(active='overview'\)/);
+ assert.match(shell,/role="tablist" aria-label="项目概览导航"/);
+ assert.match(shell,/aria-label="进入项目流程"/);
+ assert.match(overview,/ProjectOverviewShell\.projectHeader\(project\)/);
+ assert.match(overview,/ProjectOverviewShell\.navigation\('overview'\)/);
+ assert.match(overview,/ov-guided project-overview-content/);
+ assert.match(assets,/ProjectOverviewShell\.projectHeader\(project\)/);
+ assert.match(assets,/ProjectOverviewShell\.navigation\('assets'\)/);
+ assert.match(assets,/pa-main project-overview-content/);
+ assert.match(styles,/\.ov-guided\.project-overview-content,\.pa-main\.project-overview-content/);
 });

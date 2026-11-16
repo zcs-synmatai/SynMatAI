@@ -38,13 +38,22 @@ test('project schema intake fills one shared markdown document before research s
  assert.equal(r.project.currentNodeId,'P1T2');assert(r.events.some(event=>event.type==='synmat:request-flow-task-entry'));
 });
 
-test('new projects begin at requirement confirmation with only a blank schema document',async()=>{
+test('new projects begin with initiation packages, matching conversations and no generated research round',async()=>{
  const model=await source('src/features/projects/model.js');
  const research=await source('src/features/workflow/research.js');
  assert.match(model,/currentTask:'需求确认',currentNodeId:'P1T1'/);
+ assert.match(model,/scenario:'guided-demo'/);
  assert.match(model,/'项目立项\/P1T1':\{status:'进行中'\}/);
  assert.match(model,/'项目立项\/P1T2':\{status:'待开始'\}/);
- assert.match(model,/docs:\{'项目基础信息\.md':schemaDocument\}/);
+ assert.match(model,/'项目立项\/P1T3':\{status:'待开始'\}/);
+ assert.match(model,/'项目立项\/P1T4':\{status:'待开始'\}/);
+ assert.match(model,/'项目立项\/\/需求确认':workspace/);
+ assert.match(model,/'项目立项\/\/技术调研':workspace/);
+ assert.match(model,/'项目立项\/\/项目立项':workspace/);
+ assert.match(model,/'项目立项\/\/SOP审批':workspace/);
+ assert.match(model,/\{'项目基础信息\.md':schemaDocument\}/);
+ assert.match(model,/round1Generated:false/);
+ assert.doesNotMatch(model,/const requirementKey='研发\/需求与资源对齐/);
  assert.match(model,/synmat-project-entry','requirements-intake/);
  assert.match(research,/workspaceStore=\{\.\.\.latest,\.\.\.workspaceStore,\[workspaceKey\]:/);
  assert.match(research,/guidedProject&&task==='需求确认'.*ProjectSchemaFlow\.fileName/);
@@ -103,8 +112,26 @@ test('TODO confirmations continue into the next package and activate every ready
  assert.match(research,/确认完成任务/);
  assert.match(research,/autoContinue:true/);
  assert.match(research,/autoFocusFirstTask/);
- assert.match(flow,/function finishNode\(id,autoContinue=false\)/);
+ assert.match(flow,/function finishNode\(id,autoContinue=false,approved=false\)/);
  assert.match(flow,/for\(const item of generated\.tasks\).*status:'待开始'/);
  assert.match(flow,/FlowProgress\.ready\(generated/);
  assert.match(flow,/enterNodeWorkspace\(first\.id,\{autoFocusFirstTask:true\}\)/);
+});
+
+test('SOP approval gates research generation and customer access can create an identical second round',async()=>{
+ const r=runtime();vm.runInContext(await source('src/features/research-flow/demo-lifecycle.js'),r.context);
+ const lifecycle=vm.runInContext('DemoProjectLifecycle',r.context);
+ const template={version:'v1',stages:[{id:'S1',short:'研发任务',title:'研发任务'},{id:'S6',short:'准入',title:'准入'}],tasks:[{id:'T11',stage:'S1',name:'研究任务',deliverables:[]},{id:'T62',stage:'S6',name:'原准入任务',deliverables:[]}],edges:{S1:[],S6:[]}};
+ const first=lifecycle.instantiate(template,1),second=lifecycle.instantiate(template,2);
+ assert.equal(first.tasks.at(-1).name,'客户准入');
+ assert.equal(first.tasks.at(-1).round,1);
+ assert.equal(second.tasks.at(-1).name,'客户准入');
+ assert.equal(second.tasks.at(-1).id,'R2-T62');
+ assert.deepEqual(Array.from(first.tasks,item=>item.sourceTaskId),Array.from(second.tasks,item=>item.sourceTaskId));
+ const flow=await source('src/features/research-flow/page.js');
+ assert.match(flow,/sopCompleted.*generateResearchRound\(1\)/s);
+ assert.match(flow,/function confirmNextResearchRound/);
+ assert.match(flow,/启动研发阶段 2/);
+ assert.match(flow,/generateResearchRound\(2\)/);
+ assert.match(flow,/round2Approved=true/);
 });

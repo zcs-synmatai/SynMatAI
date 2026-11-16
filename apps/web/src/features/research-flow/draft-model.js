@@ -46,11 +46,6 @@ const FlowDraft = (() => {
   }
   return true;
  }
- function withSimulationDemo(view){
-  const next=structuredClone(view);
-  if(!next.tasks.some(t=>t.id==='T20')){const index=next.tasks.findIndex(t=>t.id==='T21');next.tasks.splice(index<0?next.tasks.length:index,0,{id:'T20',stage:'S2',name:'计算模拟',demo:true,role:'',method:'人工',scope:'计算模拟演示 · 多材料跨尺度导热',input:'材料结构、热导率模型、构件边界条件与计算配置',condition:'在计算模拟工作台中核对材料与构件配置，运行演示工作流并查看结果。此节点用于交互演示，不代表实际实验或科学验证。',deliverables:[{id:'D20-DEMO',description:'跨尺度导热计算演示报告'}],ops:''})}
-  if(next.tasks.some(t=>t.id==='T21')&&!next.edges.S2.some(([a,b])=>a==='T20'&&b==='T21'))next.edges.S2.unshift(['T20','T21']);
-  return next;
- }
+ function withSimulationDemo(view){return structuredClone(view)}
  return {validate,layout,removeNode,assertCompletedUnchanged,withSimulationDemo};
 })();

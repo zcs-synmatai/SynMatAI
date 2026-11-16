@@ -16,7 +16,7 @@ const DemoGuide=(()=>{
   return entries;
  }
  function route(){return (location.hash.replace(/^#/,'').split('?')[0]||'projects').replace(/^\//,'')}
- const pageKeys={projects:'projects',overview:'overview',experiments:'experiments',assets:'assets'},pageNames={projects:'项目列表',overview:'项目概览',experiments:'实验列表',assets:'项目资产'};
+ const pageKeys={projects:'projects',overview:'overview',experiments:'experiments',assets:'assets',management:'management',approvals:'approvals'},pageNames={projects:'项目列表',overview:'项目概览',experiments:'实验列表',assets:'项目资产',management:'项目管理',approvals:'审批中心'};
  let liveContext={};
  function context(override={}){
   const store=typeof ProjectStore!=='undefined'?ProjectStore:null,project=store?.active?.()||{},currentRoute=route(),fixed=pageKeys[currentRoute],detail={...liveContext,...override};
@@ -40,7 +40,7 @@ const DemoGuide=(()=>{
   if(entry.scope!==current.scope)return -1;
   const entryKey=entry.key||'*',matched=current.scope==='workbench'?(entryKey==='*'?20:entryKey===current.key?100:-1):keyScore(entryKey,current.key);return matched<0?-1:matched+(project==='*'?0:200);
  }
- function resolve(entries,current){return entries.map((entry,index)=>({entry,index,score:score(entry,current)})).filter(item=>item.score>=0).sort((a,b)=>b.score-a.score||a.index-b.index)[0]?.entry||entries[0]}
+ function resolve(entries,current){return entries.map((entry,index)=>({entry,index,score:score(entry,current)})).filter(item=>item.score>=0).sort((a,b)=>b.score-a.score||a.index-b.index)[0]?.entry||entries.find(entry=>entry.scope==='default')||entries[0]}
  function sectionHtml(section){const lines=section.lines.map(line=>line.trim()).filter(Boolean),items=lines.filter(line=>line.startsWith('- '));if(items.length===lines.length&&items.length)return `<section class="demo-guide__section"><h3>${escape(section.title)}</h3><ul>${items.map(line=>`<li>${inline(line.slice(2))}</li>`).join('')}</ul></section>`;return `<section class="demo-guide__section"><h3>${escape(section.title)}</h3><p>${lines.map(inline).join('<br>')}</p></section>`}
  function create(){
   const root=document.createElement('aside');root.className='demo-guide';root.setAttribute('aria-label','演示说明');root.innerHTML=`<header class="demo-guide__bar" data-guide-drag><span class="demo-guide__mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10M9 22h6M8 14a7 7 0 1 1 8 0c-1.3.8-1.7 1.7-1.8 2H9.8c-.1-.3-.5-1.2-1.8-2Z"/></svg></span><span class="demo-guide__heading"><strong>演示说明</strong><span class="demo-guide__note">正式环境会有新手引导。</span></span><span class="demo-guide__actions"><button class="demo-guide__button" type="button" data-guide-tour aria-label="重新查看页面引导" title="页面引导"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h3"/></svg></button><button class="demo-guide__button" type="button" data-guide-minimize aria-label="最小化演示说明" title="最小化"><svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button><button class="demo-guide__button" type="button" data-guide-restore aria-label="展开演示说明" title="展开"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></button></span></header><div class="demo-guide__body"><img class="demo-guide__image" data-guide-image alt=""><div class="demo-guide__content"><h2 class="demo-guide__context-title" data-guide-title>正在读取说明…</h2><div data-guide-content></div></div></div><footer class="demo-guide__footer"><span class="demo-guide__node" data-guide-node></span></footer>`;document.body.append(root);return root

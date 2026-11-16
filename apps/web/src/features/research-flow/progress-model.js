@@ -7,7 +7,11 @@ const FlowProgress = (() => {
   if(['已完成','进行中','待开始'].includes(saved))return saved;
   if(task.custom)return '待开始';
   if(phase==='项目立项')return '已完成';
-  if(phase==='研发')return task.stage==='S1'||task.id==='T21'?'已完成':['T20','T22'].includes(task.id)?'进行中':'待开始';
+  if(phase==='研发'){
+   if(['S0','S1','S2'].includes(task.stage))return '已完成';
+   if(task.stage==='S3')return task.id==='T30'?'已完成':'进行中';
+   return '待开始';
+  }
   return '待开始';
  }
  function aggregate(tasks,getStatus){
