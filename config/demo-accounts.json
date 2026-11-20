@@ -1,0 +1,16 @@
+{
+  "iterations": 600000,
+  "sessionHours": 8,
+  "accounts": [
+    {
+      "username": "demo",
+      "salt": "48f7120590dfb15e78c95de96b6ffd71",
+      "digest": "43399ea2cb89f28c15387cc512ae0ab6938ee70bf3554bff9a19b2c5892cc1c4"
+    },
+    {
+      "username": "demo-20261120",
+      "salt": "193fd603e0cfbf16985a80df3ee26ba4",
+      "digest": "841e3cc517b3942119d6d94105866c31922a90eb0be1e65a7b4fa68c7efa8b48"
+    }
+  ]
+}

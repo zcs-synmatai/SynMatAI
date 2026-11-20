@@ -1,7 +1,12 @@
 <!doctype html>
-<html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SynMatAI · 研发工作台 V2</title><link rel="stylesheet" href="/src/styles/main.css"><link rel="stylesheet" href="/src/styles/demo-guide.css"></head>
+<html lang="zh-CN" data-auth-pending>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SynMatAI · 研发工作台 V2</title><style>
+html[data-auth-pending] body > :not(#auth-status) { visibility: hidden !important; }
+#auth-status { position: fixed; inset: 0; z-index: 2147483647; display: grid; place-content: center; padding: 24px; background: #f7f6fb; color: #312947; text-align: center; font: 14px/1.5 system-ui, sans-serif; }
+html:not([data-auth-pending]) #auth-status { display: none; }
+</style><link rel="stylesheet" href="/src/styles/main.css"><link rel="stylesheet" href="/src/styles/demo-guide.css"></head>
 <body class="workspace-nav-collapsed">
+<div id="auth-status" role="status">正在检查登录状态…</div>
 <svg class="sprite" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
 <symbol id="flow" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M6 9v9h9M9 6h9v9"/></symbol>
@@ -26,7 +31,7 @@
  <div class="workspace-label">工作空间</div>
  <nav aria-label="全局导航"><button data-nav="项目列表"><svg><use href="#grid"/></svg><span>项目列表</span></button><button data-nav="流程V3" aria-label="项目流程" title="项目流程 · 无限画布"><svg><use href="#flow"/></svg><span>项目流程</span></button><button class="active" data-nav="任务"><svg><use href="#workspace"/></svg><span>任务工作台</span><small>7</small></button><button data-nav="实验"><svg><use href="#flask"/></svg><span>实验工作台</span></button></nav>
  <details class="sidebar-archive"><summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/></svg><span>回收站</span><svg class="sidebar-archive-chevron" aria-hidden="true"><use href="#chevron"/></svg></summary><nav aria-label="回收站备用页面"><button data-nav="工作流程V2" aria-label="工作流程V2" title="工作流程V2 · 冻结备份"><svg><use href="#flow"/></svg><span>工作流程V2</span></button><button data-nav="流程" aria-label="项目流程（旧版）" title="项目流程（旧版）"><svg><use href="#flow"/></svg><span>旧版项目流程</span><small>6</small></button></nav></details>
- <div class="sidebar-bottom"><div class="connection"><span></span>工作空间已连接</div><button class="help-btn" id="help"><svg><use href="#help-icon"/></svg>演示指南</button><div class="profile"><span class="avatar">林</span><div><strong>林晓</strong><small>项目研究员</small></div><button class="profile-dots auth-logout" id="auth-logout" type="button" title="退出登录">退出</button></div></div>
+ <div class="sidebar-bottom"><div class="connection"><span></span>工作空间已连接</div><button class="help-btn" id="help"><svg><use href="#help-icon"/></svg>演示指南</button><button class="auth-logout" id="auth-logout" type="button" aria-label="退出登录" title="退出登录"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5m4-12 4 4-4 4m-5-4h9"/></svg><span>退出登录</span></button><div class="profile"><span class="avatar">林</span><div><strong>林晓</strong><small>项目研究员</small></div></div></div>
 </aside>
 <div class="app">
  <header class="topbar"><div class="breadcrumbs"><span>项目空间</span><svg><use href="#chevron"/></svg><span data-project-name>防刮擦涂层优化</span><svg><use href="#chevron"/></svg><strong>研发 / 路线筛选 / 计算模拟</strong></div><button type="button" class="demo-badge" id="project-return-demo" title="演示返回项目后的进展汇报">交互演示</button><button class="icon-btn" id="export" aria-label="导出配置"><svg><use href="#download"/></svg></button></header>
@@ -61,7 +66,7 @@
 <script src="/src/features/projects/page.js"></script>
 <script src="/src/features/demo-guide/demo-guide.js"></script>
 <script src="/src/features/demo-guide/page-tour.js"></script>
-<script src="/src/auth-session.js"></script>
+<script src="./src/auth-session.js"></script>
 <link rel="stylesheet" href="/src/styles/approvals.css">
 <script src="/src/features/approvals.js"></script>
 </body></html>

@@ -6,6 +6,7 @@
   if(!username.value.trim()||!password.value){error.textContent='请输入账号和密码。';(!username.value.trim()?username:password).focus();return}
   submit.disabled=true;submit.classList.add('loading');submit.querySelector('span').textContent='正在验证…';
   try{
+   if(window.PrototypeDemoAuth){await window.PrototypeDemoAuth.signIn(username.value.trim(),password.value);return}
    const response=await fetch('/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:username.value.trim(),password:password.value})});
    const result=await response.json().catch(()=>({}));
    if(!response.ok)throw new Error(result.error||'暂时无法登录，请稍后重试。');

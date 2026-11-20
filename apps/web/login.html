@@ -12,13 +12,12 @@
   <section class="auth-panel" aria-labelledby="auth-title">
    <div class="auth-brand"><img src="/assets/brand/synmatai-logo.png" alt="SynMatAI 新研智材"></div>
    <div class="auth-copy"><h1 id="auth-title">访问研发原型</h1><p>请输入演示账号，继续进入 SynMatAI 项目工作空间。</p></div>
-   <form id="auth-form" novalidate>
+   <form id="auth-form" method="post" action="/auth/login" novalidate>
     <label for="auth-username"><span>账号</span><input id="auth-username" name="username" autocomplete="username" required placeholder="请输入账号"></label>
     <label for="auth-password"><span>密码</span><span class="auth-password-field"><input id="auth-password" name="password" type="password" autocomplete="current-password" required placeholder="请输入密码"><button type="button" id="auth-password-toggle" aria-label="显示密码" aria-pressed="false">显示</button></span></label>
     <p class="auth-error" id="auth-error" role="alert" aria-live="polite"></p>
     <button class="auth-submit" id="auth-submit" type="submit"><span>登录并进入</span></button>
    </form>
-   <p class="auth-note">此入口仅用于受控演示，登录状态将在 8 小时后失效。</p>
   </section>
  </main>
  <script src="/src/auth.js"></script>
