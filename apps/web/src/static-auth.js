@@ -68,10 +68,9 @@
   window.addEventListener('storage', event => {
     if (event.key === storageKey || event.key === null) checkSession();
   });
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('#auth-logout')?.addEventListener('click', () => {
-      localStorage.removeItem(storageKey);
-      returnToLogin();
-    });
+  document.addEventListener('click', event => {
+    if (!event.target.closest?.('#auth-logout')) return;
+    localStorage.removeItem(storageKey);
+    returnToLogin();
   });
 })();
