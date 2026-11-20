@@ -6,7 +6,8 @@ import { createDevServer } from './dev-server.mjs';
 
 test('development server protects the prototype behind the configured login', async t => {
   const credentials = { enabled:true, username:'test-user', password:'test-password', sessionHours:1 };
-  const server = createDevServer(credentials); server.listen(0,'127.0.0.1'); await once(server,'listening');
+  const extraAccount = { username:'second-user', password:'second-password' };
+  const server = createDevServer({ ...credentials, accounts:[extraAccount] }); server.listen(0,'127.0.0.1'); await once(server,'listening');
   t.after(() => new Promise(resolve => { server.closeAllConnections(); server.close(resolve); }));
   const base = `http://127.0.0.1:${server.address().port}`;
   const entry = await fetch(base);
@@ -19,6 +20,16 @@ test('development server protects the prototype behind the configured login', as
   assert.equal(accepted.status,200);
   const cookie = accepted.headers.get('set-cookie').split(';')[0];
   const auth = { headers:{ cookie } };
+  const secondLogin = await fetch(base+'/auth/login',{method:'POST',body:JSON.stringify(extraAccount)});
+  assert.equal(secondLogin.status,200);
+  const secondCookie = secondLogin.headers.get('set-cookie').split(';')[0];
+  assert.notEqual(secondCookie,cookie);
+  for (const [sessionCookie, username] of [[cookie,credentials.username],[secondCookie,extraAccount.username]]) {
+    const session = await fetch(base+'/auth/session',{headers:{cookie:sessionCookie}});
+    assert.deepEqual(await session.json(),{authenticated:true,username});
+  }
+  const crossed = await fetch(base+'/auth/login',{method:'POST',body:JSON.stringify({username:extraAccount.username,password:credentials.password})});
+  assert.equal(crossed.status,401);
   const app = await fetch(base,auth);
   assert.equal(app.status,200); assert.match(await app.text(),/src\/styles\/main.css/);
   const css = await fetch(base+'/src/styles/main.css');

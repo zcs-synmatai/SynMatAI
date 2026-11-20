@@ -18,8 +18,19 @@ function inside(root, candidate) {
 }
 export function createDevServer(authConfig) {
   const config = authConfig ?? JSON.parse(readFileSync(authConfigPath, 'utf8'));
-  if (config.enabled !== false && (!config.username || !config.password)) throw new Error('Prototype auth requires username and password');
-  const sessionToken = randomBytes(32).toString('base64url');
+  const accounts = [...(config.accounts ?? [])];
+  if (config.username !== undefined || config.password !== undefined) {
+    accounts.unshift({ username:config.username, password:config.password });
+  }
+  if (config.enabled !== false && (
+    !accounts.length ||
+    accounts.some(account => typeof account?.username !== 'string' || !account.username.trim() || typeof account.password !== 'string' || !account.password) ||
+    new Set(accounts.map(account => account.username)).size !== accounts.length
+  )) throw new Error('Prototype auth requires a unique username and a password for each account');
+  const loginAccounts = config.enabled === false ? [] : accounts.map(account => ({
+    ...account,
+    sessionToken:randomBytes(32).toString('base64url'),
+  }));
   const sessionHours = Math.min(72, Math.max(1, Number(config.sessionHours) || 8));
   const cookieName = 'synmatai_prototype_session';
   const secureEqual = (actual, expected) => {
@@ -27,10 +38,11 @@ export function createDevServer(authConfig) {
     const right = Buffer.from(String(expected ?? ''));
     return left.length === right.length && timingSafeEqual(left, right);
   };
-  const authenticated = req => {
-    if (config.enabled === false) return true;
+  const sessionAccount = req => {
     const cookie = String(req.headers.cookie || '').split(';').map(item => item.trim()).find(item => item.startsWith(cookieName+'='));
-    return cookie ? secureEqual(decodeURIComponent(cookie.slice(cookieName.length+1)), sessionToken) : false;
+    if (!cookie) return undefined;
+    const token = cookie.slice(cookieName.length+1);
+    return loginAccounts.find(account => secureEqual(token, account.sessionToken));
   };
   const json = (res, status, body, headers={}) => {
     const data = Buffer.from(JSON.stringify(body));
@@ -52,8 +64,9 @@ export function createDevServer(authConfig) {
       }
       if (req.method === 'POST' && normalized === '/auth/login') {
         const body = await readJson(req);
-        if (!secureEqual(body.username, config.username) || !secureEqual(body.password, config.password)) return json(res, 401, { error:'账号或密码不正确，请重新输入。' });
-        const cookie = `${cookieName}=${encodeURIComponent(sessionToken)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${sessionHours*3600}`;
+        const account = loginAccounts.find(candidate => secureEqual(body?.username, candidate.username) && secureEqual(body?.password, candidate.password));
+        if (!account) return json(res, 401, { error:'账号或密码不正确，请重新输入。' });
+        const cookie = `${cookieName}=${account.sessionToken}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${sessionHours*3600}`;
         return json(res, 200, { ok:true }, { 'Set-Cookie':cookie });
       }
       if (req.method === 'POST' && normalized === '/auth/logout') {
@@ -62,11 +75,16 @@ export function createDevServer(authConfig) {
       if (!['GET','HEAD'].includes(req.method)) {
         res.writeHead(405, { Allow:'GET, HEAD, POST' }); res.end(); return;
       }
-      if (!authenticated(req) && normalized === '/auth/session') return json(res, 401, { authenticated:false });
-      if (authenticated(req) && normalized === '/auth/session') return json(res, 200, { authenticated:true, username:config.username });
-      if (!authenticated(req) && normalized !== '/' && normalized !== '/index.html' && !publicLoginFiles.has(normalized)) return json(res, 401, { error:'请先登录后访问。' });
+      const account = sessionAccount(req);
+      const authenticated = config.enabled === false || Boolean(account);
+      if (normalized === '/auth/session') {
+        return authenticated
+          ? json(res, 200, { authenticated:true, username:account?.username ?? config.username })
+          : json(res, 401, { authenticated:false });
+      }
+      if (!authenticated && normalized !== '/' && normalized !== '/index.html' && !publicLoginFiles.has(normalized)) return json(res, 401, { error:'请先登录后访问。' });
       const name = normalized === '/' ? 'index.html' : normalized.replace(/^\/+/, '');
-      const servedName = !authenticated(req) && name === 'index.html' ? 'login.html' : name;
+      const servedName = !authenticated && name === 'index.html' ? 'login.html' : name;
       // Only application source, its entrypoint and public assets are served.
       const base = servedName === 'index.html' || servedName === 'login.html' || servedName.startsWith('src/') ? webRoot : publicRoot;
       const target = resolve(base, servedName);

@@ -2,5 +2,6 @@
   "enabled": true,
   "username": "replace-with-local-username",
   "password": "replace-with-a-strong-local-password",
+  "accounts": [],
   "sessionHours": 8
 }
