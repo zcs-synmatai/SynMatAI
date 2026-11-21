@@ -3,6 +3,7 @@
 本文件配置原型中的“演示说明”。当前案例为高导热凝胶研发，内容来自 `run-02/thermal_gal`；所有数值、状态与记录均为交互演示，不代表真实试验或放行结论。
 
 ## [page-projects] 从项目列表开始
+steps: 浏览项目 | 选择项目 | 进入工作台
 scope: page
 key: projects
 project: *
@@ -15,6 +16,7 @@ project: *
 进入“高导热凝胶开发示例”可直接体验 T31 的实验 ELN；立项阶段已有完成记录。需要从头体验时新建项目，从需求确认逐步推进到 SOP 研发规划。
 
 ## [page-overview] 查看项目概览
+steps: 查看进度 | 阅读项目速览 | 打开相关资料
 scope: page
 key: overview
 project: *
@@ -29,6 +31,7 @@ alt: 项目概览与关键指标汇总示意图
 切换“总览”“项目资产”“项目管理”。总览查看进展与指标，资产按研发阶段和节点查找文件，管理中设置成员角色及审批规则；“进入项目流程”按钮为页面跳转。
 
 ## [page-experiments] 管理导热凝胶实验
+steps: 选择实验 | 打开 ELN | 查看记录
 scope: page
 key: experiments
 project: *
@@ -41,6 +44,7 @@ project: *
 打开一项实验，体验ELN记录、方案确认和结果回流。
 
 ## [page-assets] 查看项目资产
+steps: 展开研发阶段 | 定位节点文件 | 预览资产
 scope: page
 key: assets
 project: *
@@ -53,6 +57,7 @@ project: *
 展开研发阶段树，打开一份Markdown资产查看来源和关联任务。
 
 ## [workbench-default] 当前任务工作台
+steps: 查看任务输入 | 与 Agent 协作 | 确认交付
 scope: workbench
 key: *
 project: *
@@ -65,6 +70,7 @@ project: *
 点击“完成任务”继续推进。若配置了对应审批规则，则先提交审批，通过后再更新任务与下游；节点资产页签始终保留。
 
 ## [workbench-T11-TODO-001] 粉体前处理与级配
+steps: 核对物料 | 整理级配证据 | 确认交付
 scope: workbench
 key: T11-TODO-001
 project: *
@@ -79,6 +85,7 @@ alt: Agent 协助整理粉体前处理与级配证据的示意图
 查看本对话产生的资产，再回到流程确认它与“材料与级配”阶段的关系。
 
 ## [workbench-T21-TODO-001] 分段混炼与出罐
+steps: 查看小试计划 | 记录混炼与出罐 | 核对交付
 scope: workbench
 key: T21-TODO-001
 project: *
@@ -91,6 +98,7 @@ project: *
 在对话和资产页签间切换，体验任务记录的连续协作。
 
 ## [workbench-T31-TODO-001] BLT与稳定性
+steps: 查看薄层样件 | 在 ELN 记录 | 核对 BLT 与硬度
 scope: workbench
 key: T31-TODO-001
 project: *
@@ -103,6 +111,7 @@ project: *
 打开ELN页签，查看实验记录和节点资产并列存在。
 
 ## [workbench-T40-TODO-001] 多厚度热学验证
+steps: 选择试样厚度 | 查看热学记录 | 汇总验证结果
 scope: workbench
 key: T40-TODO-001
 project: *
@@ -115,6 +124,7 @@ project: *
 调整对话与工作预览区宽度，查看计算工作区与资产页签。
 
 ## [flow-global] 浏览导热凝胶全局流程
+steps: 项目立项 | 分阶段研发 | 资格与交付
 scope: flow-global
 key: global
 project: *
@@ -130,6 +140,7 @@ alt: 导热凝胶研发工作流的阶段与任务关系示意图
 单击选择、双击下钻，双击顶部节点回到上一层。左上后退/前进可恢复浏览位置，不撤销流程修改；切换任务对话进入工作台，选择 Supervisor 对话回到流程。
 
 ## [flow-stage-S0] 需求与资源对齐
+steps: 梳理需求 | 确认资源 | 对齐判据
 scope: flow-stage
 key: S0
 project: *
@@ -138,6 +149,7 @@ project: *
 冻结产品等级、κ_bulk、κ_app、BLT、2Rc等指标定义，以及资源、供方和职责边界。
 
 ## [flow-stage-S1] 材料与级配
+steps: 验收原料 | 前处理与级配 | 确认配方准备
 scope: flow-stage
 key: S1
 project: *
@@ -146,6 +158,7 @@ project: *
 形成关键原料接收、供方资格、粉体前处理和四峰级配的可追溯证据。
 
 ## [flow-stage-S2] 小试与混炼
+steps: 制定小试计划 | 混炼与出罐 | 复核过程记录
 scope: flow-stage
 key: S2
 project: *
@@ -154,6 +167,7 @@ project: *
 把既定候选落实为小批次，记录混炼、流变和快速热学筛选结果。
 
 ## [flow-stage-S3] 固化与薄层
+steps: 确认固化条件 | 制备薄层样件 | 核对 BLT 与硬度
 scope: flow-stage
 key: S3
 project: *
@@ -162,6 +176,7 @@ project: *
 确认固化窗口、薄层样件、BLT重复性、硬度和稳定性。
 
 ## [flow-stage-S4] 热学与可靠性
+steps: 准备多厚度样件 | 热学与可靠性验证 | 汇总证据
 scope: flow-stage
 key: S4
 project: *
@@ -170,6 +185,7 @@ project: *
 并行开展多厚度热学、可靠性和微观界面验证，分离体相与界面贡献。
 
 ## [flow-stage-S5] 中试与资格
+steps: 准备中试 | 验证批次一致性 | 审核交付
 scope: flow-stage
 key: S5
 project: *
@@ -178,6 +194,7 @@ project: *
 验证10—50kg中试一致性并准备最终资格和交付文件。
 
 ## [flow-stage-S6] 质量与监督
+steps: 确认放行要求 | 监测过程质量 | 跟踪异常
 scope: flow-stage
 key: S6
 project: *
@@ -186,6 +203,7 @@ project: *
 建立SPC、单批放行、供方监督和NCR/CAPA再资格闭环。
 
 ## [flow-stage-default] 当前研发阶段
+steps: 查看上游输入 | 下钻工作包 | 对照下游交付
 scope: flow-stage
 key: *
 project: *
@@ -194,6 +212,7 @@ project: *
 阶段视图用于观察当前阶段中的工作包、状态和上下游关系。
 
 ## [flow-package-default] 当前工作包流程
+steps: 查看输入资料 | 打开具体任务 | 查看交付资产
 scope: flow-package
 key: *
 project: *
@@ -204,6 +223,7 @@ project: *
 - Agent快捷条提供分析、调研和DOE任务；连接点的新建菜单还提供结果文件、实验、模拟计算等类型。
 
 ## [page-management] 管理成员和审批规则
+steps: 设置项目成员 | 配置审批角色 | 保存规则
 scope: page
 key: management
 project: *
@@ -216,6 +236,7 @@ project: *
 为任务完成或流程变更勾选Leader并保存，再到工作台或工作流提交操作。四层矩阵已提供配置，阶段/子阶段独立启动等拦截尚未接入。
 
 ## [page-approvals] 从审批人的视角处理申请
+steps: 查看审批详情 | 预览关联流程 | 通过或驳回
 scope: page
 key: approvals
 project: *
@@ -228,6 +249,7 @@ project: *
 默认林晓有3条待审示例。选择BLT要求变更可体验两级审批；切换王宁查看SOP待审。示例申请仅更新审批记录，不改变研发进度；实际发起申请通过后才应用关联操作。
 
 ## [workbench-P1T1-TODO-001] 补全项目基础信息
+steps: 提供需求与约束 | Agent 整理草稿 | 确认项目基础信息
 scope: workbench
 key: P1T1-TODO-001
 project: *
@@ -239,6 +261,7 @@ Agent确认需求、约束和预期产出，整理到“项目基础信息.md”
 新项目发送任意背景说明即可生成演示草稿；查看信息确认卡片后启动调研。内置示例的立项记录已完成，可供回看。
 
 ## [workbench-P1T2-TODO-001] 梳理技术路线与证据缺口
+steps: 查看需求 | 梳理技术路线 | 标记证据缺口
 scope: workbench
 key: P1T2-TODO-001
 project: *
@@ -250,6 +273,7 @@ project: *
 两个调研TODO并行进行。完成本任务后继续“形成技术调研报告”，不会提前完成整个工作包。
 
 ## [workbench-P1T2-TODO-002] 形成技术调研报告
+steps: 汇总证据 | 起草调研报告 | 确认报告
 scope: workbench
 key: P1T2-TODO-002
 project: *
@@ -261,6 +285,7 @@ project: *
 打开本对话产生的Markdown资产；关闭文档回到“节点资产”，点击“完成任务”继续推进。
 
 ## [workbench-P1T3-TODO-001] 立项材料与项目审批
+steps: 准备立项材料 | 提交立项审批 | 查看审批结果
 scope: workbench
 key: P1T3-TODO-001
 project: *
@@ -272,6 +297,7 @@ project: *
 新项目完成本任务时会提醒立项需要审批，点击“模拟审批通过并继续”即可进入SOP节点，并保留演示审批记录。
 
 ## [workbench-P1T4-TODO-001] 确认SOP研发规划
+steps: 核对 SOP | 审批研发规划 | 生成研发流程
 scope: workbench
 key: P1T4-TODO-001
 project: *
@@ -283,6 +309,7 @@ SOP规划按普通“流程变更—阶段”规则审核，一份申请覆盖�
 未配置审批时直接确认并生成研发阶段1；配置后先到审批中心通过，再生成研发流程。审批详情可预览待发布规划。
 
 ## [flow-stage-P1] 项目立项流程
+steps: 需求确认 | 技术调研与立项 | SOP 审批
 scope: flow-stage
 key: P1
 project: *
@@ -294,6 +321,7 @@ project: *
 示例项目的立项已完成，可双击查看历史任务。新建项目可体验从需求确认到审批、生成研发流程的连续过程。
 
 ## [default] 认识当前工作区
+steps: 定位当前页面 | 查看演示说明 | 跟随操作
 scope: default
 key: *
 project: *
@@ -305,6 +333,7 @@ project: *
 当前内容仅用于产品交互演示，数据保存在浏览器本地，未连接真实AI、科学计算服务或后端数据库。
 
 ## [workbench-T30-TODO-001] 固化与样件制备
+steps: 确认固化条件 | 制备样件 | 记录样件状态
 scope: workbench
 key: T30-TODO-001
 project: *
@@ -316,6 +345,7 @@ project: *
 切换“节点资产”和“实验 ELN”页签。填写的是演示记录，任务提交完成与实验是否通过是不同判断。
 
 ## [workbench-T41-TODO-001] 可靠性与界面实验
+steps: 选择可靠性项目 | 填写界面实验记录 | 汇总观察
 scope: workbench
 key: T41-TODO-001
 project: *
@@ -327,6 +357,7 @@ project: *
 从实验任务进入 ELN 查看记录结构。若配置完成审批，提交后到审批中心审核，再继续流转。
 
 ## [workbench-T50-TODO-001] 中试一致性验证
+steps: 核对中试批次 | 检查过程一致性 | 提交验证记录
 scope: workbench
 key: T50-TODO-001
 project: *

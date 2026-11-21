@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { runInNewContext } from 'node:vm';
 
 const root=new URL('../',import.meta.url);
 const read=path=>readFile(new URL(path,root),'utf8');
@@ -48,4 +49,18 @@ test('global demo guide is loaded by the app and uses hierarchical markdown cont
  assert.match(content,/scope: flow-stage\s+key: S1/);
  assert.match(content,/scope: flow-package\s+key: \*/);
  assert.match(content,/image: \/content\/demo-guide-/);
+});
+
+test('every guide entry provides labeled steps for the diagram',async()=>{
+ const [script,content]=await Promise.all([
+  read('apps/web/src/features/demo-guide/demo-guide.js'),read('apps/web/public/content/demo-guide.md')
+ ]);
+ const entries=runInNewContext(`${script}\nDemoGuide.parse(content)`,{
+  content,document:{readyState:'loading',addEventListener(){}}
+ });
+ for(const entry of entries){
+  assert.equal(entry.steps?.split('|').filter(step=>step.trim()).length,3,entry.id);
+ }
+ const basics=entries.find(entry=>entry.id==='workbench-P1T1-TODO-001');
+ assert.match(basics.steps,/提供需求与约束.*Agent 整理草稿.*确认项目基础信息/);
 });
